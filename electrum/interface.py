@@ -442,7 +442,8 @@ class Interface(PrintError):
             header = blockchain.deserialize_header(bfh(raw_header['hex']), height)
             self.tip_header = header
             self.tip = height
-            if self.tip < constants.net.max_checkpoint():
+            # if self.tip < constants.net.max_checkpoint():
+            if self.tip < 0: # fork management skipped in FairChains because of PoC
                 raise GracefulDisconnect('server tip below max checkpoint')
             self.mark_ready()
             await self._process_header_at_tip()
@@ -472,7 +473,8 @@ class Interface(PrintError):
             if next_height > height + 10:
                 could_connect, num_headers = await self.request_chunk(height, next_height)
                 if not could_connect:
-                    if height <= constants.net.max_checkpoint():
+                    # if height <= constants.net.max_checkpoint():
+                    if height <= 0: # fork management skipped in FairChains because of PoC
                         raise GracefulDisconnect('server chain conflicts with checkpoints or genesis')
                     last, height = await self.step(height)
                     continue
@@ -574,8 +576,10 @@ class Interface(PrintError):
         async def iterate():
             nonlocal height, header
             checkp = False
-            if height <= constants.net.max_checkpoint():
-                height = constants.net.max_checkpoint()
+            # if height <= constants.net.max_checkpoint():
+            if height <= 0:
+                # height = constants.net.max_checkpoint()
+                height = 0
                 checkp = True
             header = await self.get_block_header(height, 'backward')
             chain = blockchain.check_header(header) if 'mock' not in header else header['mock']['check'](header)

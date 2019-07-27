@@ -86,7 +86,8 @@ class SPV(NetworkJobOnDefaultServer):
             # if it's in the checkpoint region, we still might not have the header
             header = self.blockchain.read_header(tx_height)
             if header is None:
-                if tx_height < constants.net.max_checkpoint():
+                # if tx_height < constants.net.max_checkpoint():
+                if tx_height < 0: 
                     await self.group.spawn(self.network.request_chunk(tx_height, None, can_return_early=True))
                 continue
             # request now

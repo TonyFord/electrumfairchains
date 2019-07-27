@@ -94,8 +94,10 @@ def read_blockchains(config: 'SimpleConfig'):
                             prev_hash=None)
     blockchains[constants.net.GENESIS] = best_chain
     # consistency checks
-    if best_chain.height() > constants.net.max_checkpoint():
-        header_after_cp = best_chain.read_header(constants.net.max_checkpoint()+1)
+    # if best_chain.height() > constants.net.max_checkpoint():  # fork management skipped in FairChains because of PoC
+    if best_chain.height() > 0:
+        # header_after_cp = best_chain.read_header(constants.net.max_checkpoint()+1)
+        header_after_cp = best_chain.read_header(0+1) # fork management skipped in FairChains because of PoC
         if not header_after_cp or not best_chain.can_connect(header_after_cp, check_height=False):
             util.print_error("[blockchain] deleting best chain. cannot connect header after last cp to last cp.")
             os.unlink(best_chain.path())
@@ -117,7 +119,8 @@ def read_blockchains(config: 'SimpleConfig'):
         prev_hash = (64-len(prev_hash)) * "0" + prev_hash  # left-pad with zeroes
         first_hash = (64-len(first_hash)) * "0" + first_hash
         # forks below the max checkpoint are not allowed
-        if forkpoint <= constants.net.max_checkpoint():
+        # if forkpoint <= constants.net.max_checkpoint():
+        if forkpoint <= 0:
             delete_chain(filename, "deleting fork below max checkpoint")
             return
         # find parent (sorting by forkpoint guarantees it's already instantiated)
@@ -167,7 +170,8 @@ class Blockchain(util.PrintError):
         assert isinstance(forkpoint_hash, str) and len(forkpoint_hash) == 64, forkpoint_hash
         assert (prev_hash is None) or (isinstance(prev_hash, str) and len(prev_hash) == 64), prev_hash
         # assert (parent is None) == (forkpoint == 0)
-        if 0 < forkpoint <= constants.net.max_checkpoint():
+        # if 0 < forkpoint <= constants.net.max_checkpoint():
+        if 0 < forkpoint <= 0:
             raise Exception(f"cannot fork below max checkpoint. forkpoint: {forkpoint}")
         self.config = config
         self.forkpoint = forkpoint  # height of first header
@@ -468,7 +472,8 @@ class Blockchain(util.PrintError):
 
     def get_hash(self, height: int) -> str:
         def is_height_checkpoint():
-            within_cp_range = height <= constants.net.max_checkpoint()
+            # within_cp_range = height <= constants.net.max_checkpoint()
+            within_cp_range = height <= 0
             at_chunk_boundary = (height+1) % 2016 == 0
             return within_cp_range and at_chunk_boundary
 
