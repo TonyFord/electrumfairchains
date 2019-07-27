@@ -39,10 +39,11 @@ if TYPE_CHECKING:
 
 ################################## transactions
 
-COINBASE_MATURITY = 100
+import electrum.constants
 
+COINBASE_MATURITY = constants.FairChains.COINBASE_MATURITY
 COIN = 100000000
-TOTAL_COIN_SUPPLY_LIMIT_IN_BTC = 53193831.467966
+TOTAL_COIN_SUPPLY_LIMIT_IN_BTC = constants.FairChains.TOTAL_SUPPLY_LIMIT
 
 # supported types of transaction outputs
 TYPE_ADDRESS = 0

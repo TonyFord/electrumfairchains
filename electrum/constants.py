@@ -28,9 +28,8 @@ import json
 
 from .util import inv_dict
 
-
 def read_json(filename, default):
-    path = os.path.join(os.path.dirname(__file__), filename)
+    path = os.path.join(os.path.dirname(__file__)+'/fairchains/', filename)
     try:
         with open(path, 'r') as f:
             r = json.loads(f.read())
@@ -38,36 +37,48 @@ def read_json(filename, default):
         r = default
     return r
 
+# class AbstractNet:
 
-class AbstractNet:
+#    @classmethod
+#    def max_checkpoint(cls) -> int:
+#        print( max(0, len(cls.CHECKPOINTS) * 2016 - 1) )
+#        return max(0, len(cls.CHECKPOINTS) * 2016 - 1)
 
-    @classmethod
-    def max_checkpoint(cls) -> int:
-        return max(0, len(cls.CHECKPOINTS) * 2016 - 1)
+class FairChains():
 
-
-class BitcoinMainnet(AbstractNet):
+    FCs=read_json('fairchains.json',[])
+    FC =read_json(FCs[0]+'.json', {})
+    FCx=read_json(FCs[0]+'.electrumx.json', {})
 
     TESTNET = False
-    WIF_PREFIX = 0xdf
-    ADDRTYPE_P2PKH = 95
-    ADDRTYPE_P2SH = 36
-    SEGWIT_HRP = "bc"
-    GENESIS = "beed44fa5e96150d95d56ebd5d2625781825a9407a5215dd7eda723373a0a1d7"
-    DEFAULT_PORTS = {'t': '51811', 's': '51812'}
-    DEFAULT_SERVERS = read_json('servers.json', {})
-    CHECKPOINTS = read_json('checkpoints.json', [])
 
+    WIF_PREFIX      = FC['data']['secretKeyVersion']
+    ADDRTYPE_P2PKH  = FC['data']['pubKeyAddrVersion']
+    ADDRTYPE_P2SH   = FC['data']['scriptAddrVersion']
+
+    SEGWIT_HRP = "bc"
+
+    GENESIS = FC['data']['blockHash']
+    DEFAULT_PORTS = FCx['PEER_DEFAULT_PORTS']
+    DEFAULT_SERVERS = FCx['PEERS']
+    CHECKPOINTS=[] # not used in FairChains or FairCoin
+
+    COINBASE_MATURITY=FC['data']['dynamicChainParams']['coinbaseMaturity']
+    TOTAL_SUPPLY_LIMIT=FC['data']['maxMoney']
+
+    xprv_header = int(FC['data']['extSecretPrefix'],16)
     XPRV_HEADERS = {
-        'standard':    0x0488ade4,  # xprv
+        'standard':    xprv_header,  # xprv
         'p2wpkh-p2sh': 0x049d7878,  # yprv
         'p2wsh-p2sh':  0x0295b005,  # Yprv
         'p2wpkh':      0x04b2430c,  # zprv
         'p2wsh':       0x02aa7a99,  # Zprv
     }
     XPRV_HEADERS_INV = inv_dict(XPRV_HEADERS)
+
+    xpup_header = int(FC['data']['extPubKeyPrefix'],16)
     XPUB_HEADERS = {
-        'standard':    0x0488b21e,  # xpub
+        'standard':    xpup_header,  # xpub
         'p2wpkh-p2sh': 0x049d7cb2,  # ypub
         'p2wsh-p2sh':  0x0295b43f,  # Ypub
         'p2wpkh':      0x04b24746,  # zpub
@@ -77,70 +88,10 @@ class BitcoinMainnet(AbstractNet):
     BIP44_COIN_TYPE = 0
 
 
-class BitcoinTestnet(AbstractNet):
-
-    TESTNET = True
-    WIF_PREFIX = 0xef
-    ADDRTYPE_P2PKH = 111
-    ADDRTYPE_P2SH = 196
-    SEGWIT_HRP = "tb"
-    GENESIS = "42327d5edf3cbb75bb139ec78bd62e517f14d7cbad451e4778741b6b4c1dfbc6"
-    DEFAULT_PORTS = {'t': '52811', 's': '52812'}
-    DEFAULT_SERVERS = read_json('servers_testnet.json', {})
-    CHECKPOINTS = read_json('checkpoints_testnet.json', [])
-
-    XPRV_HEADERS = {
-        'standard':    0x04358394,  # tprv
-        'p2wpkh-p2sh': 0x044a4e28,  # uprv
-        'p2wsh-p2sh':  0x024285b5,  # Uprv
-        'p2wpkh':      0x045f18bc,  # vprv
-        'p2wsh':       0x02575048,  # Vprv
-    }
-    XPRV_HEADERS_INV = inv_dict(XPRV_HEADERS)
-    XPUB_HEADERS = {
-        'standard':    0x043587cf,  # tpub
-        'p2wpkh-p2sh': 0x044a5262,  # upub
-        'p2wsh-p2sh':  0x024289ef,  # Upub
-        'p2wpkh':      0x045f1cf6,  # vpub
-        'p2wsh':       0x02575483,  # Vpub
-    }
-    XPUB_HEADERS_INV = inv_dict(XPUB_HEADERS)
-    BIP44_COIN_TYPE = 1
-
-
-class BitcoinRegtest(BitcoinTestnet):
-
-    SEGWIT_HRP = "bcrt"
-    GENESIS = "0f9188f13cb7b2c71f2a335e3a4fc328bf5beb436012afca590b1a11466e2206"
-    DEFAULT_SERVERS = read_json('servers_regtest.json', {})
-    CHECKPOINTS = []
-
-
-class BitcoinSimnet(BitcoinTestnet):
-
-    SEGWIT_HRP = "sb"
-    GENESIS = "683e86bd5c6d110d91b94b97137ba6bfe02dbbdb8e3dff722a669b5d69d77af6"
-    DEFAULT_SERVERS = read_json('servers_regtest.json', {})
-    CHECKPOINTS = []
-
 
 # don't import net directly, import the module instead (so that net is singleton)
-net = BitcoinMainnet
-
-def set_simnet():
-    global net
-    net = BitcoinSimnet
+net = FairChains
 
 def set_mainnet():
     global net
-    net = BitcoinMainnet
-
-
-def set_testnet():
-    global net
-    net = BitcoinTestnet
-
-
-def set_regtest():
-    global net
-    net = BitcoinRegtest
+    net = FairChains

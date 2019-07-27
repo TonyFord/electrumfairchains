@@ -1,0 +1,62 @@
+{
+    "data": {
+        "jsonVersion": 1,
+        "chainName": "main",
+        "currencyName": "FairCoin",
+        "currencySymbol": "FAIR",
+        "maxMoney": 53193831.467966,
+        "networkMagic": "0xfabfb5da",
+        "alertPubKey": "04b06af4982ca3edc2c040cc2cde05fa5b33264af4a98712ceb29d196e7390b4753eb7264dc5f383f29a44d63e70dbbd8d9e46a0a60f80ef62fd1911291ec388e4",
+        "defaultPort": 40404,
+        "seedNodes": [
+            "faircoin2-seed1.fair-coin.org",
+	    "faircoin2-seed2.fair-coin.org"
+        ],
+        "fixedSeeds": [
+            {	
+                "ipAddress": "00000000000000000000ffff33FE7367",
+                "port": 40404
+            }
+        ],
+        "pubKeyAddrVersion": 95,
+        "scriptAddrVersion": 36,
+        "secretKeyVersion": 223,
+        "extPubKeyPrefix": "0x0488b21e",
+        "extSecretPrefix": "0x0488ade4",
+        "requireStandardTx": true,
+
+        "blockchainStartTime": 1462293889,
+        "genesisCvnID": "0xc001d00d",
+        "genesisAdminID": "0xad000001",
+        "genesisCvnPubKey": "65aaaf2147d0de94d1d307de8817076c55111d42cc5f185c0f8d2b5e9ad29bf62c26b1d86a4bb1f8ba32345eefb01ac3f568af9243486e578fac0d9a645ad72a",
+        "genesisAdminPubKey": "363d7f305589549a832e92a43d009ad9c9adb7fe648280c08763be7dcba5bf1c80f59f97042066c2e3f95a75e3f3cdfd75309f4c86ec6086847e7676fae69f5f",
+	"dynamicChainParams": {
+            "minAdminSigs": 1,
+            "maxAdminSigs": 11,
+            "blockSpacing": 180,
+            "blockSpacingGracePeriod": 60,
+            "transactionFee": 0,
+            "dustThreshold": 0,
+            "minSuccessiveSignatures": 1,
+            "blocksToConsiderForSigCheck": 1,
+            "percentageOfSignaturesMean": 70,
+            "maxBlockSize": 1500000,
+            "blockPropagationWaitTime": 50,
+            "retryNewSigSetInterval": 15,
+            "coinbaseMaturity": 10,
+            "description": "#00001 https://fair-coin.org/ The genesis dynamic chain parameters"
+        },
+        "merkleRoot": "7c27ade2c28e67ed3077f8f77b8ea6d36d4f5eba04c099be3c9faa9a4a04c046",
+        "chainMultiSig": "14dc4f77f9d59ece2b3aa02cc4df99954d47fa2719be207d1b5010745aec419e451f01a8749cd16f22a727d0deba5110d2ce7e44ff86f0efdea58db4efdb92cd",
+        "adminMultiSig": "591039a3b2e2c5ca8cd491e940263c9f2515a43b5085d4451dbdf8c09acb3d1fe7001957ebeda65a3cd26f1d19fb3db3b06baf5dc41cdcd3412728c8b57edaf5",
+	"payloadHash": "2b7ab86ef7189614d4bccb2576bffe834b7c0e6d3fd63539ea9fbbca45d26c0e",
+        "blockHash": "beed44fa5e96150d95d56ebd5d2625781825a9407a5215dd7eda723373a0a1d7",
+        "creatorSignature": "ced5d4d4f5967b80ca774324a5d9ab0569ec1f1608dfef6c1e439094dc3467d50b2116fa02f3e89753033e94628668298f61b43df046881c9312f3bccde46a3f"
+    },
+    "hash": "a54c7600d0493126a5865e295d96654762e544ce134e13265a5e981fcd14db9f",
+    "sign": {
+        "comment": "",
+        "signature": "",
+        "signedhash": ""
+    }
+}
