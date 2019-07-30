@@ -83,8 +83,8 @@ class SimpleConfig(PrintError):
         self.cmdline_options.pop('config_version', None)
 
         # Set self.path and read the user config
-        self.user_config = {}  # for self.get in electrumfair_path()
-        self.path = self.electrumfair_path()
+        self.user_config = {}  # for self.get in etc_path()
+        self.path = self.efc_path()
         self.user_config = read_user_config_function(self.path)
         if not self.user_config:
             # avoid new config getting upgraded
@@ -101,10 +101,10 @@ class SimpleConfig(PrintError):
         # Make a singleton instance of 'self'
         set_config(self)
 
-    def electrumfair_path(self):
-        # Read electrumfair_path from command line
+    def efc_path(self):
+        # Read efc_path from command line
         # Otherwise use the user's default data directory.
-        path = self.get('electrumfair_path')
+        path = self.get('efc_path')
         if path is None:
             path = self.user_dir()
 
@@ -119,7 +119,7 @@ class SimpleConfig(PrintError):
             path = os.path.join(path, 'simnet')
             make_dir(path, allow_symlink=False)
 
-        #self.print_error("electrumfair directory", path)
+        #self.print_error("electrumfairchains directory", path)
         return path
 
     def rename_config_keys(self, config, keypairs, deprecation_warning=False):

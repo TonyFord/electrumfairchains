@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = ElectrumFair
+title = ElectrumFairChains
 
 # (str) Package name
-package.name = ElectrumFair
+package.name = ElectrumFairChains
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = org.electrumfair
+package.domain = org.electrumfairchains
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -35,10 +35,10 @@ requirements = python3, android, openssl, plyer, kivy==b47f669f44dbda4f463bcb7d2
 
 # (str) Presplash of the application
 #presplash.filename = %(source.dir)s/gui/kivy/theming/splash.png
-presplash.filename = %(source.dir)s/electrum/gui/icons/electrumfair_presplash.png
+presplash.filename = %(source.dir)s/electrum/gui/icons/efc_presplash.png
 
 # (str) Icon of the application
-icon.filename = %(source.dir)s/electrum/gui/icons/electrumfair_launcher.png
+icon.filename = %(source.dir)s/electrum/gui/icons/efc_launcher.png
 
 # (str) Supported orientation (one of landscape, portrait or all)
 orientation = portrait
@@ -94,7 +94,7 @@ android.add_src = electrum/gui/kivy/data/java-classes/
 
 android.gradle_dependencies = me.dm7.barcodescanner:zxing:1.9.8
 
-android.add_activities = org.electrumfair.qr.SimpleScannerActivity
+android.add_activities = org.electrumfairchains.qr.SimpleScannerActivity
 
 # (str) python-for-android branch to use, if not master, useful to try
 # not yet merged features.

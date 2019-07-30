@@ -32,10 +32,10 @@ from kivy.metrics import inch
 from kivy.lang import Builder
 
 ## lazy imports for factory so that widgets can be used in kv
-#Factory.register('InstallWizard', module='electrumfair.gui.kivy.uix.dialogs.installwizard')
-#Factory.register('InfoBubble', module='electrumfair.gui.kivy.uix.dialogs')
-#Factory.register('OutputList', module='electrumfair.gui.kivy.uix.dialogs')
-#Factory.register('OutputItem', module='electrumfair.gui.kivy.uix.dialogs')
+#Factory.register('InstallWizard', module='efc.gui.kivy.uix.dialogs.installwizard')
+#Factory.register('InfoBubble', module='efc.gui.kivy.uix.dialogs')
+#Factory.register('OutputList', module='efc.gui.kivy.uix.dialogs')
+#Factory.register('OutputItem', module='efc.gui.kivy.uix.dialogs')
 
 from .uix.dialogs.installwizard import InstallWizard
 from .uix.dialogs import InfoBubble, crash_reporter
@@ -51,7 +51,7 @@ util = False
 
 # register widget cache for keeping memory down timeout to forever to cache
 # the data
-Cache.register('electrumfair_widgets', timeout=0)
+Cache.register('efc_widgets', timeout=0)
 
 from kivy.uix.screenmanager import Screen
 from kivy.uix.tabbedpanel import TabbedPanel
@@ -281,7 +281,7 @@ class ElectrumWindow(App):
 
         App.__init__(self)#, **kwargs)
 
-        title = _('ElectrumFair App')
+        title = _('ElectrumFairChains App')
         self.electrum_config = config = kwargs.get('config', None)
         self.language = config.get('language', 'en')
         self.network = network = kwargs.get('network', None)  # type: Network
@@ -437,7 +437,7 @@ class ElectrumWindow(App):
         from jnius import autoclass, cast
         from android import activity
         PythonActivity = autoclass('org.kivy.android.PythonActivity')
-        SimpleScannerActivity = autoclass("org.electrumfair.qr.SimpleScannerActivity")
+        SimpleScannerActivity = autoclass("org.electrumfairchains.qr.SimpleScannerActivity")
         Intent = autoclass('android.content.Intent')
         intent = Intent(PythonActivity.mActivity, SimpleScannerActivity)
 
@@ -649,7 +649,7 @@ class ElectrumWindow(App):
 
     @profiler
     def init_ui(self):
-        ''' Initialize The Ux part of electrumfair. This function performs the basic
+        ''' Initialize The Ux part of electrumfairchains. This function performs the basic
         tasks of setting up the ui.
         '''
         #from weakref import ref
@@ -665,8 +665,8 @@ class ElectrumWindow(App):
                          module='electrum.gui.kivy.uix.qrcodewidget')
 
         # preload widgets. Remove this if you want to load the widgets on demand
-        #Cache.append('electrumfair_widgets', 'AnimatedPopup', Factory.AnimatedPopup())
-        #Cache.append('electrumfair_widgets', 'QRCodeWidget', Factory.QRCodeWidget())
+        #Cache.append('efc_widgets', 'AnimatedPopup', Factory.AnimatedPopup())
+        #Cache.append('efc_widgets', 'QRCodeWidget', Factory.QRCodeWidget())
 
         # load and focus the ui
         self.root.manager = self.root.ids['manager']
@@ -678,7 +678,7 @@ class ElectrumWindow(App):
         self.receive_screen = None
         self.requests_screen = None
         self.address_screen = None
-        self.icon = "electrum/gui/icons/electrumfair.png"
+        self.icon = "electrum/gui/icons/efc.png"
         self.tabs = self.root.ids['tabs']
 
     def update_interfaces(self, dt):
@@ -803,8 +803,8 @@ class ElectrumWindow(App):
                 from plyer import notification
             icon = (os.path.dirname(os.path.realpath(__file__))
                     + '/../../' + self.icon)
-            notification.notify('ElectrumFair', message,
-                            app_icon=icon, app_name='ElectrumFair')
+            notification.notify('ElectrumFairChains', message,
+                            app_icon=icon, app_name='ElectrumFairChains')
         except ImportError:
             Logger.Error('Notification: needs plyer; `sudo python3 -m pip install plyer`')
 

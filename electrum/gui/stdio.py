@@ -21,7 +21,7 @@ class ElectrumGui:
         self.network = daemon.network
         storage = WalletStorage(config.get_wallet_path())
         if not storage.file_exists:
-            print("Wallet not found. try 'electrumfair create'")
+            print("Wallet not found. try 'efc create'")
             exit()
         if storage.is_encrypted():
             password = getpass.getpass('Password:', stream=None)
@@ -168,7 +168,7 @@ class ElectrumGui:
 
     def do_send(self):
         if not is_address(self.str_recipient):
-            print(_('Invalid FairCoin address'))
+            print(_('Invalid Coin address'))
             return
         try:
             amount = int(Decimal(self.str_amount) * COIN)
@@ -218,12 +218,12 @@ class ElectrumGui:
             #self.update_contacts_tab()
 
     def network_dialog(self):
-        print("use 'electrumfair setconfig server/proxy' to change your network settings")
+        print("use 'efc setconfig server/proxy' to change your network settings")
         return True
 
 
     def settings_dialog(self):
-        print("use 'electrumfair setconfig' to change your settings")
+        print("use 'efc setconfig' to change your settings")
         return True
 
     def password_dialog(self):

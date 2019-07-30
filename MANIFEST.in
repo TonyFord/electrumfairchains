@@ -1,8 +1,8 @@
 include LICENCE RELEASE-NOTES AUTHORS
 include README.rst
-include electrumfair.desktop
+include efc.desktop
 include *.py
-include run_electrumfair
+include run_efc
 include contrib/requirements/requirements.txt
 include contrib/requirements/requirements-hw.txt
 recursive-include packages *.py

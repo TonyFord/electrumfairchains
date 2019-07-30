@@ -46,8 +46,8 @@ from .transaction import TxOutput
 from .network import Network
 
 
-REQUEST_HEADERS = {'Accept': 'application/faircoin-paymentrequest', 'User-Agent': 'ElectrumFair'}
-ACK_HEADERS = {'Content-Type':'application/faircoin-payment','Accept':'application/faircoin-paymentack','User-Agent':'ElectrumFair'}
+REQUEST_HEADERS = {'Accept': 'application/fairchains-paymentrequest', 'User-Agent': 'ElectrumFairChains'}
+ACK_HEADERS = {'Content-Type':'application/fairchains-payment','Accept':'application/fairchains-paymentack','User-Agent':'ElectrumFairChains'}
 
 ca_path = certifi.where()
 ca_list = None
@@ -280,7 +280,7 @@ class PaymentRequest:
         paymnt.transactions.append(bfh(raw_tx))
         ref_out = paymnt.refund_to.add()
         ref_out.script = util.bfh(transaction.Transaction.pay_script(TYPE_ADDRESS, refund_addr))
-        paymnt.memo = "Paid using Electrum"
+        paymnt.memo = "Paid using ElectrumFairChains"
         pm = paymnt.SerializeToString()
         payurl = urllib.parse.urlparse(pay_det.payment_url)
         resp_content = None

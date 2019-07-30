@@ -28,7 +28,7 @@ class UpdateCheck(QWidget, PrintError):
     def __init__(self, main_window, latest_version=None):
         self.main_window = main_window
         QWidget.__init__(self)
-        self.setWindowTitle('Electrum - ' + _('Update Check'))
+        self.setWindowTitle('ElectrumFairChains - ' + _('Update Check'))
         self.content = QVBoxLayout()
         self.content.setContentsMargins(*[10]*4)
 
@@ -46,7 +46,7 @@ class UpdateCheck(QWidget, PrintError):
         self.content.addWidget(self.pb)
 
         versions = QHBoxLayout()
-        versions.addWidget(QLabel(_("Current version: {}".format(version.ELECTRUMFAIR_VERSION))))
+        versions.addWidget(QLabel(_("Current version: {}".format(version.EFC_VERSION))))
         self.latest_version_label = QLabel(_("Latest version: {}".format(" ")))
         versions.addWidget(self.latest_version_label)
         self.content.addLayout(versions)
@@ -74,7 +74,7 @@ class UpdateCheck(QWidget, PrintError):
 
     @staticmethod
     def is_newer(latest_version):
-        return latest_version > StrictVersion(version.ELECTRUMFAIR_VERSION)
+        return latest_version > StrictVersion(version.EFC_VERSION)
 
     def update_view(self, latest_version=None):
         if latest_version:
@@ -86,10 +86,10 @@ class UpdateCheck(QWidget, PrintError):
                 self.detail_label.setText(_("You can download the new version from {}.").format(url))
             else:
                 self.heading_label.setText('<h2>' + _("Already up to date") + '</h2>')
-                self.detail_label.setText(_("You are already on the latest version of Electrum."))
+                self.detail_label.setText(_("You are already on the latest version of ElectrumFairChains."))
         else:
             self.heading_label.setText('<h2>' + _("Checking for updates...") + '</h2>')
-            self.detail_label.setText(_("Please wait while Electrum checks for available updates."))
+            self.detail_label.setText(_("Please wait while ElectrumFairChains checks for available updates."))
 
 
 class UpdateCheckThread(QThread, PrintError):

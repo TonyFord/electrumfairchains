@@ -403,7 +403,7 @@ class Interface(PrintError):
             self.session.interface = self
             self.session.default_timeout = self.network.get_network_timeout_seconds(NetworkTimeout.Generic)
             try:
-                ver = await session.send_request('server.version', [version.ELECTRUMFAIR_VERSION, version.PROTOCOL_VERSION])
+                ver = await session.send_request('server.version', [version.EFC_VERSION, version.PROTOCOL_VERSION])
             except aiorpcx.jsonrpc.RPCError as e:
                 raise GracefulDisconnect(e)  # probably 'unsupported protocol version'
             if exit_early:

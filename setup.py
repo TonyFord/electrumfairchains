@@ -17,7 +17,7 @@ _min_python_version_tuple = tuple(map(int, (MIN_PYTHON_VERSION.split("."))))
 
 
 if sys.version_info[:3] < _min_python_version_tuple:
-    sys.exit("Error: Electrum requires Python version >= %s..." % MIN_PYTHON_VERSION)
+    sys.exit("Error: ElectrumFairChains requires Python version >= %s..." % MIN_PYTHON_VERSION)
 
 with open('contrib/requirements/requirements.txt') as f:
     requirements = f.read().splitlines()
@@ -46,7 +46,7 @@ if platform.system() in ['Linux', 'FreeBSD', 'DragonFly']:
         else:
             usr_share = os.path.expanduser('~/.local/share')
     data_files += [
-        (os.path.join(usr_share, 'applications/'), ['electrumfair.desktop']),
+        (os.path.join(usr_share, 'applications/'), ['efc.desktop']),
         (os.path.join(usr_share, icons_dirname), ['electrum/gui/icons/electrumfair.png'])
     ]
 
@@ -58,8 +58,8 @@ extras_require = {
 extras_require['full'] = [pkg for sublist in list(extras_require.values()) for pkg in sublist]
 
 setup(
-    name="ElectrumFair",
-    version=version.ELECTRUMFAIR_VERSION,
+    name="ElectrumFairChains",
+    version=version.EFC_VERSION,
     python_requires='>={}'.format(MIN_PYTHON_VERSION),
     install_requires=requirements,
     extras_require=extras_require,
@@ -82,12 +82,12 @@ setup(
             'icons/*',
         ],
     },
-    scripts=['electrum/electrumfair'],
+    scripts=['electrum/efc'],
     data_files=data_files,
-    description="Lightweight FairCoin Wallet",
-    author="Thomas Voegtlin, Thomas König (FairCoin)",
+    description="Lightweight FairChains Wallet",
+    author="Thomas Voegtlin, Thomas König (FairCoin), Sebastian Gampe",
     author_email="thomasv@electrum.org, tom@fair-coin.org",
     license="MIT Licence",
-    url="https://download.faircoin.world",
-    long_description="""Lightweight FairCoin Wallet""",
+    url="https://github.com/fairchainsx/electrumfairchains/releases",
+    long_description="""Lightweight FairChains Wallet""",
 )

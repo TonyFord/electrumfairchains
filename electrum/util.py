@@ -53,17 +53,17 @@ if TYPE_CHECKING:
     from .interface import Interface
     from .simple_config import SimpleConfig
 
+from electrum.constants import FairChains
 
 def inv_dict(d):
     return {v: k for k, v in d.items()}
 
-
 ca_path = certifi.where()
 
 
-base_units = {'FAIR':8, 'mFAIR':5, 'uFAIR':2, 'sat':0}
+base_units = { FairChains.SHORTNAME : 8, 'm'+FairChains.SHORTNAME : 5, 'u'+FairChains.SHORTNAME : 2, 'sat':0}
 base_units_inverse = inv_dict(base_units)
-base_units_list = ['FAIR', 'mFAIR', 'uFair', 'sat']  # list(dict) does not guarantee order
+base_units_list = [ FairChains.SHORTNAME, 'm'+FairChains.SHORTNAME, 'u'+FairChains.SHORTNAME, 'sat']  # list(dict) does not guarantee order
 
 DECIMAL_POINT_DEFAULT = 8  # mBTC
 
@@ -392,7 +392,7 @@ def assert_datadir_available(config_path):
         return
     else:
         raise FileNotFoundError(
-            'ElectrumFair datadir does not exist. Was it deleted while running?' + '\n' +
+            'ElectrumFairChains datadir does not exist. Was it deleted while running?' + '\n' +
             'Should be at {}'.format(path))
 
 
@@ -479,14 +479,15 @@ def bh2u(x: bytes) -> str:
 
 
 def user_dir():
+
     if 'ANDROID_DATA' in os.environ:
         return android_data_dir()
     elif os.name == 'posix':
-        return os.path.join(os.environ["HOME"], ".electrumfair")
+        return os.path.join(os.environ["HOME"], ".electrumfairchains." + FairChains.NAME )
     elif "APPDATA" in os.environ:
-        return os.path.join(os.environ["APPDATA"], "ElectrumFair")
+        return os.path.join(os.environ["APPDATA"], "ElectrumFairChains")
     elif "LOCALAPPDATA" in os.environ:
-        return os.path.join(os.environ["LOCALAPPDATA"], "ElectrumFair")
+        return os.path.join(os.environ["LOCALAPPDATA"], "ElectrumFairChains")
     else:
         #raise Exception("No home directory found in environment variables.")
         return
@@ -644,12 +645,14 @@ def time_difference(distance_in_time, include_seconds):
     else:
         return "over %d years" % (round(distance_in_minutes / 525600))
 
-mainnet_block_explorers = {
-    'Chain Fair': ('http://chain.fair.to/',
-                        {'tx': 'transaction?transaction=', 'addr': 'address?address='}),
-    'system default': ('blockchain:',
-                        {'tx': 'tx', 'addr': 'address'}),
-}
+mainnet_block_explorers = FairChains.BLOCKEXPLORER
+
+# mainnet_block_explorers = {
+#    'Chain Fair': ('http://chain.fair.to/',
+#                        {'tx': 'transaction?transaction=', 'addr': 'address?address='}),
+#    'system default': ('blockchain:',
+#                        {'tx': 'tx', 'addr': 'address'}),
+# }
 
 testnet_block_explorers = {
     'system default': ('blockchain:',
@@ -663,7 +666,7 @@ def block_explorer_info():
 
 def block_explorer(config: 'SimpleConfig') -> str:
     from . import constants
-    default_ = 'Chain Fair'
+    default_ = FairChains.BLOCKEXPLORER_DEFAULT
     be_key = config.get('block_explorer', default_)
     be = block_explorer_info().get(be_key)
     return be_key if be is not None else default_
@@ -906,7 +909,7 @@ class TxMinedInfo(NamedTuple):
 
 def make_aiohttp_session(proxy: Optional[dict], headers=None, timeout=None):
     if headers is None:
-        headers = {'User-Agent': 'Electrum'}
+        headers = {'User-Agent': 'ElectrumFairChains'}
     if timeout is None:
         timeout = aiohttp.ClientTimeout(total=10)
     elif isinstance(timeout, (int, float)):

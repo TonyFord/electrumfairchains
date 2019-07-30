@@ -19,6 +19,7 @@ from .util import (PrintError, ThreadJob, make_dir, log_exceptions,
                    make_aiohttp_session, resource_path)
 from .network import Network
 from .simple_config import SimpleConfig
+from electrum.constants import FairChains
 
 
 DEFAULT_ENABLED = False
@@ -160,78 +161,6 @@ class ExchangeBase(PrintError):
         rates = await self.get_rates('')
         return sorted([str(a) for (a, b) in rates.items() if b is not None and len(a)==3])
 
-class FairCoop_ChainFaircoin(ExchangeBase):
-
-    async def get_rates(self,ccy):
-        json = await self.get_json('chain.fair-coin.org', '/download/ticker')
-        return dict([(r, Decimal(json[r]['last']))
-                     for r in json])
-
-    def history_ccys(self):
-        return ['BTC','ETH','LTC','BCH','BNB','EOS','XRP','XLM','USD','AED','ARS','AUD','BDT','BHD','BMD','BRL','CAD','CHF','CLP','CNY','CZK','DKK','EUR','GBP','HKD','HUF','IDR','ILS','INR','JPY','KRW','KWD','LKR','MMK','MXN','MYR','NOK','NZD','PHP','PKR','PLN','RUB','SAR','SEK','SGD','THB','TRY','TWD','VEF','VND','ZAR','XDR','XAG','XAU']
-
-    async def request_history(self, ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/history_faircoop_'+ccy+'.json')
-        return json
-
-class FairCoop_GetFaircoin(ExchangeBase):
-
-    async def get_rates(self,ccy):
-        json = await self.get_json('getfaircoin.net', '/api/ticker')
-        return dict([(r, Decimal(json[r]['last']))
-                     for r in json])
-
-    def history_ccys(self):
-        return ['BTC','ETH','LTC','BCH','BNB','EOS','XRP','XLM','USD','AED','ARS','AUD','BDT','BHD','BMD','BRL','CAD','CHF','CLP','CNY','CZK','DKK','EUR','GBP','HKD','HUF','IDR','ILS','INR','JPY','KRW','KWD','LKR','MMK','MXN','MYR','NOK','NZD','PHP','PKR','PLN','RUB','SAR','SEK','SGD','THB','TRY','TWD','VEF','VND','ZAR','XDR','XAG','XAU']
-
-    async def request_history(self, ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/history_faircoop_'+ccy+'.json')
-        return json
-
-class FreeVision(ExchangeBase):
-
-    async def get_rates(self,ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/ticker')
-        return dict([(r, Decimal(json[r]['last']))
-                     for r in json])
-
-    def history_ccys(self):
-        return ['BTC','ETH','LTC','BCH','BNB','EOS','XRP','XLM','USD','AED','ARS','AUD','BDT','BHD','BMD','BRL','CAD','CHF','CLP','CNY','CZK','DKK','EUR','GBP','HKD','HUF','IDR','ILS','INR','JPY','KRW','KWD','LKR','MMK','MXN','MYR','NOK','NZD','PHP','PKR','PLN','RUB','SAR','SEK','SGD','THB','TRY','TWD','VEF','VND','ZAR','XDR','XAG','XAU']
-
-    async def request_history(self, ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/history_'+ccy+'.json')
-        return json
-
-
-class FreeVision_mid(ExchangeBase):
-
-    async def get_rates(self,ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/ticker_mid')
-        return dict([(r, Decimal(json[r]['last']))
-                     for r in json])
-
-    def history_ccys(self):
-        return ['BTC','ETH','LTC','BCH','BNB','EOS','XRP','XLM','USD','AED','ARS','AUD','BDT','BHD','BMD','BRL','CAD','CHF','CLP','CNY','CZK','DKK','EUR','GBP','HKD','HUF','IDR','ILS','INR','JPY','KRW','KWD','LKR','MMK','MXN','MYR','NOK','NZD','PHP','PKR','PLN','RUB','SAR','SEK','SGD','THB','TRY','TWD','VEF','VND','ZAR','XDR','XAG','XAU']
-
-    async def request_history(self, ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/history_mid_'+ccy+'.json')
-        return json
-
-
-class FreeMarket(ExchangeBase):
-
-    async def get_rates(self,ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/ticker_freemarket')
-        return dict([(r, Decimal(json[r]['last']))
-                     for r in json])
-
-    def history_ccys(self):
-        return ['BTC','ETH','LTC','BCH','BNB','EOS','XRP','XLM','USD','AED','ARS','AUD','BDT','BHD','BMD','BRL','CAD','CHF','CLP','CNY','CZK','DKK','EUR','GBP','HKD','HUF','IDR','ILS','INR','JPY','KRW','KWD','LKR','MMK','MXN','MYR','NOK','NZD','PHP','PKR','PLN','RUB','SAR','SEK','SGD','THB','TRY','TWD','VEF','VND','ZAR','XDR','XAG','XAU']
-
-    async def request_history(self, ccy):
-        json = await self.get_json('exchange.faircoin.co', '/data/history_freemarket_'+ccy+'.json')
-        return json
-
 
 def dictinvert(d):
     inv = {}
@@ -242,56 +171,25 @@ def dictinvert(d):
     return inv
 
 def get_exchanges_and_currencies():
-    # load currencies.json from disk
-    path = resource_path('currencies.json')
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.loads(f.read())
-    except:
-        pass
-    # or if not present, generate it now.
-    print("cannot find currencies.json. will regenerate it now.")
+
     d = {}
-    is_exchange = lambda obj: (inspect.isclass(obj)
-                               and issubclass(obj, ExchangeBase)
-                               and obj != ExchangeBase)
-    exchanges = dict(inspect.getmembers(sys.modules[__name__], is_exchange))
 
-    async def get_currencies_safe(name, exchange):
-        try:
-            d[name] = await exchange.get_currencies()
-            print(name, "ok")
-        except:
-            print(name, "error")
+    for name,exchange in FairChains.EXCHANGE_RATES.items():
+        d[name] = exchange['currencies']
 
-    async def query_all_exchanges_for_their_ccys_over_network():
-        async with timeout_after(10):
-            async with TaskGroup() as group:
-                for name, klass in exchanges.items():
-                    exchange = klass(None, None)
-                    await group.spawn(get_currencies_safe(name, exchange))
-    loop = asyncio.get_event_loop()
-    try:
-        loop.run_until_complete(query_all_exchanges_for_their_ccys_over_network())
-    except Exception as e:
-        pass
-    with open(path, 'w', encoding='utf-8') as f:
-        f.write(json.dumps(d, indent=4, sort_keys=True))
     return d
 
-
 CURRENCIES = get_exchanges_and_currencies()
-
 
 def get_exchanges_by_ccy(history=True):
     if not history:
         return dictinvert(CURRENCIES)
     d = {}
-    exchanges = CURRENCIES.keys()
+    # exchanges = CURRENCIES.keys()
+    exchanges = FairChains.EXCHANGE_RATES.keys()
     for name in exchanges:
-        klass = globals()[name]
-        exchange = klass(None, None)
-        d[name] = exchange.history_ccys()
+        exchange = ExchangeBase(None, None)
+        d[name] = FairChains.EXCHANGE_RATES[name]['history_rates']
     return dictinvert(d)
 
 
@@ -399,11 +297,10 @@ class FxThread(ThreadJob):
             self.network.asyncio_loop.call_soon_threadsafe(self._trigger.set)
 
     def set_exchange(self, name):
-        class_ = globals().get(name) or globals().get(DEFAULT_EXCHANGE)
         self.print_error("using exchange", name)
         if self.config_exchange() != name:
             self.config.set_key('use_exchange', name, True)
-        self.exchange = class_(self.on_quotes, self.on_history)
+        self.exchange = ExchangeBase(self.on_quotes, self.on_history)
         # A new exchange means new fx quotes, initially empty.  Force
         # a quote refresh
         self.trigger_update()
@@ -469,6 +366,3 @@ class FxThread(ThreadJob):
         from .util import timestamp_to_datetime
         date = timestamp_to_datetime(timestamp)
         return self.history_rate(date)
-
-
-assert globals().get(DEFAULT_EXCHANGE), f"default exchange {DEFAULT_EXCHANGE} does not exist"

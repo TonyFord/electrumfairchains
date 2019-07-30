@@ -89,7 +89,7 @@ class ElectrumGui(PrintError):
         if hasattr(QtCore.Qt, "AA_ShareOpenGLContexts"):
             QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
         if hasattr(QGuiApplication, 'setDesktopFileName'):
-            QGuiApplication.setDesktopFileName('electrumfair.desktop')
+            QGuiApplication.setDesktopFileName('efc.desktop')
         self.gui_thread = threading.current_thread()
         self.config = config
         self.daemon = daemon
@@ -98,7 +98,7 @@ class ElectrumGui(PrintError):
         self.efilter = OpenFileEventFilter(self.windows)
         self.app = QElectrumApplication(sys.argv)
         self.app.installEventFilter(self.efilter)
-        self.app.setWindowIcon(read_QIcon("electrum.png"))
+        self.app.setWindowIcon(read_QIcon("efc.png"))
         # timer
         self.timer = QTimer(self.app)
         self.timer.setSingleShot(False)
@@ -111,7 +111,7 @@ class ElectrumGui(PrintError):
         # init tray
         self.dark_icon = self.config.get("dark_icon", False)
         self.tray = QSystemTrayIcon(self.tray_icon(), None)
-        self.tray.setToolTip('ElectrumFair')
+        self.tray.setToolTip('ElectrumFairChains')
         self.tray.activated.connect(self.tray_activated)
         self.build_tray_menu()
         self.tray.show()
@@ -147,13 +147,13 @@ class ElectrumGui(PrintError):
             submenu.addAction(_("Close"), window.close)
         m.addAction(_("Dark/Light"), self.toggle_tray_icon)
         m.addSeparator()
-        m.addAction(_("Exit Electrum"), self.close)
+        m.addAction(_("Exit ElectrumFairChains"), self.close)
 
     def tray_icon(self):
         if self.dark_icon:
-            return read_QIcon('electrumfair_dark_icon.png')
+            return read_QIcon('efc_dark_icon.png')
         else:
-            return read_QIcon('electrumfair_light_icon.png')
+            return read_QIcon('efc_light_icon.png')
 
     def toggle_tray_icon(self):
         self.dark_icon = not self.dark_icon
@@ -179,7 +179,7 @@ class ElectrumGui(PrintError):
 
     def show_network_dialog(self, parent):
         if not self.daemon.network:
-            parent.show_warning(_('You are using Electrum in offline mode; restart Electrum if you want to get connected'), title=_('Offline'))
+            parent.show_warning(_('You are using ElectrumFairChains in offline mode; restart ElectrumFairChains if you want to get connected'), title=_('Offline'))
             return
         if self.nd:
             self.nd.on_update()

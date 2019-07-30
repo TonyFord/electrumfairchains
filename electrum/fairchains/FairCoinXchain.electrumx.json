@@ -1,0 +1,150 @@
+{
+  "BLOCKEXPLORER" : {
+      "explorer.example.co": [ "http://explorer.example.co/", {"tx": "transaction?transaction=", "addr": "address?address="} ],
+      "system default": [ "blockchain:",
+                          {"tx": "tx", "addr": "address"} ]
+  },
+  "BLOCKEXPLORER_DEFAULT" : "explorer.example.co",
+  "EXCHANGE_RATES" : {
+    "FairCoop_ChainFaircoin" : {
+      "currencies" : [
+        "CHF",
+        "DKK",
+        "EUR",
+        "FAIRO",
+        "GBP",
+        "MXN",
+        "NOK",
+        "PLN",
+        "SEK",
+        "SYP",
+        "USD"
+      ],
+      "ticker" : [ "chain.fair-coin.org", "/download/ticker" ],
+      "history_rates" : ["BTC","ETH","LTC","BCH","BNB","EOS","XRP","XLM","USD","AED","ARS","AUD","BDT","BHD","BMD","BRL","CAD","CHF","CLP","CNY","CZK","DKK","EUR","GBP","HKD","HUF","IDR","ILS","INR","JPY","KRW","KWD","LKR","MMK","MXN","MYR","NOK","NZD","PHP","PKR","PLN","RUB","SAR","SEK","SGD","THB","TRY","TWD","VEF","VND","ZAR","XDR","XAG","XAU"],
+      "history_url" : [ "exchange.faircoin.co", "/data/history_faircoop_<currency>.json" ]
+    },
+    "FairCoop_GetFaircoin" : {
+      "currencies" : [
+        "CHF",
+        "DKK",
+        "EUR",
+        "GBP",
+        "MXN",
+        "NOK",
+        "PLN",
+        "SEK",
+        "SYP",
+        "USD"
+      ],
+      "ticker" : [ "getfaircoin.net", "/api/ticker" ],
+      "history_rates" : ["BTC","ETH","LTC","BCH","BNB","EOS","XRP","XLM","USD","AED","ARS","AUD","BDT","BHD","BMD","BRL","CAD","CHF","CLP","CNY","CZK","DKK","EUR","GBP","HKD","HUF","IDR","ILS","INR","JPY","KRW","KWD","LKR","MMK","MXN","MYR","NOK","NZD","PHP","PKR","PLN","RUB","SAR","SEK","SGD","THB","TRY","TWD","VEF","VND","ZAR","XDR","XAG","XAU"],
+      "history_url" : [ "exchange.faircoin.co", "/data/history_faircoop_<currency>.json" ]
+    },
+    "FreeVision" : {
+      "currencies" : [
+        "AED","ARS","AUD",
+        "BCH","BDT","BHD","BMD","BNB","BRL","BTC",
+        "CAD","CHF","CLP","CNY","CZK",
+        "DKK",
+        "EOS","ETH","EUR",
+        "GBP",
+        "HKD","HUF",
+        "IDR","ILS","INR",
+        "JPY",
+        "KRW","KWD",
+        "LKR","LTC",
+        "MMK","MXN","MYR",
+        "NOK","NZD",
+        "PHP","PKR","PLN",
+        "RUB",
+        "SAR","SEK","SGD",
+        "THB","TRY","TWD",
+        "USD",
+        "VEF","VND",
+        "XAG","XAU","XDR","XLM","XRP",
+        "ZAR"
+      ],
+      "ticker" : [ "exchange.faircoin.co", "/data/ticker" ],
+      "history_rates" : ["BTC","ETH","LTC","BCH","BNB","EOS","XRP","XLM","USD","AED","ARS","AUD","BDT","BHD","BMD","BRL","CAD","CHF","CLP","CNY","CZK","DKK","EUR","GBP","HKD","HUF","IDR","ILS","INR","JPY","KRW","KWD","LKR","MMK","MXN","MYR","NOK","NZD","PHP","PKR","PLN","RUB","SAR","SEK","SGD","THB","TRY","TWD","VEF","VND","ZAR","XDR","XAG","XAU"],
+      "history_url" : [ "exchange.faircoin.co", "/data/history_<currency>.json" ]
+    },
+    "FreeVision_mid" : {
+      "currencies" : [
+        "AED","ARS","AUD",
+        "BCH","BDT","BHD","BMD","BNB","BRL","BTC",
+        "CAD","CHF","CLP","CNY","CZK",
+        "DKK",
+        "EOS","ETH","EUR",
+        "GBP",
+        "HKD","HUF",
+        "IDR","ILS","INR",
+        "JPY",
+        "KRW","KWD",
+        "LKR","LTC",
+        "MMK","MXN","MYR",
+        "NOK","NZD",
+        "PHP","PKR","PLN",
+        "RUB",
+        "SAR","SEK","SGD",
+        "THB","TRY","TWD",
+        "USD",
+        "VEF","VND",
+        "XAG","XAU","XDR","XLM","XRP",
+        "ZAR"
+      ],
+      "ticker" : [ "exchange.faircoin.co", "/data/ticker_mid" ],
+      "history_rates" : ["BTC","ETH","LTC","BCH","BNB","EOS","XRP","XLM","USD","AED","ARS","AUD","BDT","BHD","BMD","BRL","CAD","CHF","CLP","CNY","CZK","DKK","EUR","GBP","HKD","HUF","IDR","ILS","INR","JPY","KRW","KWD","LKR","MMK","MXN","MYR","NOK","NZD","PHP","PKR","PLN","RUB","SAR","SEK","SGD","THB","TRY","TWD","VEF","VND","ZAR","XDR","XAG","XAU"],
+      "history_url" : [ "exchange.faircoin.co", "/data/history_mid_<currency>.json" ]
+    },
+    "FreeMarket" : {
+      "currencies" : [
+        "AED","ARS","AUD",
+        "BCH","BDT","BHD","BMD","BNB","BRL","BTC",
+        "CAD","CHF","CLP","CNY","CZK",
+        "DKK",
+        "EOS","ETH","EUR",
+        "GBP",
+        "HKD","HUF",
+        "IDR","ILS","INR",
+        "JPY",
+        "KRW","KWD",
+        "LKR","LTC",
+        "MMK","MXN","MYR",
+        "NOK","NZD",
+        "PHP","PKR","PLN",
+        "RUB",
+        "SAR","SEK","SGD",
+        "THB","TRY","TWD",
+        "USD",
+        "VEF","VND",
+        "XAG","XAU","XDR","XLM","XRP",
+        "ZAR"
+      ],
+      "ticker" : [ "exchange.faircoin.co", "/data/ticker_freemarket" ],
+      "history_rates" : ["BTC","ETH","LTC","BCH","BNB","EOS","XRP","XLM","USD","AED","ARS","AUD","BDT","BHD","BMD","BRL","CAD","CHF","CLP","CNY","CZK","DKK","EUR","GBP","HKD","HUF","IDR","ILS","INR","JPY","KRW","KWD","LKR","MMK","MXN","MYR","NOK","NZD","PHP","PKR","PLN","RUB","SAR","SEK","SGD","THB","TRY","TWD","VEF","VND","ZAR","XDR","XAG","XAU"],
+      "history_url" : [ "exchange.faircoin.co", "/data/history_freemarket_<currency>.json" ]
+    }
+  },
+  "PEER_DEFAULT_PORTS" :
+  {
+    "t": "52811",
+    "s": "52812"
+  },
+  "PEERS" :
+  {
+      "electrumfairchains.faircoin.co": {
+          "pruning": "-",
+          "s": "52812",
+          "t": "52811",
+          "version": "1.1"
+      }
+  },
+  "SERVICES" : [
+      "rpc://127.0.0.1:8002",
+      "ssl://:52812"
+  ],
+  "REPORT_SERVICES" :
+  [
+  ]
+}

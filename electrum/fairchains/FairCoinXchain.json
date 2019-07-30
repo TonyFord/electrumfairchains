@@ -1,0 +1,60 @@
+{
+    "data": {
+        "jsonVersion": 1,
+        "chainName": "FairCoinXchain",
+        "currencyName": "FairCoinX",
+        "currencySymbol": "FCX",
+        "maxMoney": 50,
+        "networkMagic": "0xfabfb5fe",
+        "alertPubKey": "0453d95b0fe032057a53491072d034aee1800dc71cfd716300a55f60cbb182940327dbbd3c15ca77a03843af2d28434a27fa09685c684c18449009357d51610832",
+        "defaultPort": 49404,
+        "seedNodes": [
+            "seed.faircoin.co"
+        ],
+        "fixedSeeds": [
+            {
+                "ipAddress": "00000000000000000000ffff5921061b",
+                "port": 49404
+            }
+        ],
+        "pubKeyAddrVersion": 138,
+        "scriptAddrVersion": 76,
+        "secretKeyVersion": 223,
+        "extPubKeyPrefix": "0x0488b21e",
+        "extSecretPrefix": "0x0488ade4",
+        "requireStandardTx": true,
+        "blockchainStartTime": 1563095802,
+        "genesisCvnID": "0xc0ff0001",
+        "genesisAdminID": "0xadff0001",
+        "genesisCvnPubKey": "1b0a27cbf85ac87c905e2a9e6c07a7b6cc32ea29dd6b31e995e992bfdeff729788917602a7a3af051d852550e84c0a6aa39c941d0ae13c0508f8dd3d232e91ad",
+        "genesisAdminPubKey": "1fecf93fed450c5e2bb284c32637e47ff8b94a9d2839b35db79f08d99defb490b72cb62bbe116923bb4097ff896706540775db2361993b01fbd5dcd4c30670b0",
+        "dynamicChainParams": {
+            "minAdminSigs": 1,
+            "maxAdminSigs": 1,
+            "blockSpacing": 180,
+            "blockSpacingGracePeriod": 60,
+            "transactionFee": 0,
+            "dustThreshold": 0,
+            "minSuccessiveSignatures": 1,
+            "blocksToConsiderForSigCheck": 1,
+            "percentageOfSignaturesMean": 70,
+            "maxBlockSize": 1500000,
+            "blockPropagationWaitTime": 50,
+            "retryNewSigSetInterval": 15,
+            "coinbaseMaturity": 10,
+            "description": "#00001 no-URI The genesis dynamic chain parameters"
+        },
+        "merkleRoot": "7c27ade2c28e67ed3077f8f77b8ea6d36d4f5eba04c099be3c9faa9a4a04c046",
+        "chainMultiSig": "07bcf929b1f2abcbff4c8883ccf0de5aa5ec5909368f16aae09cce2d211930250b4a6e3c2f9267f90e6383db91d3d1c9a3bd968f26b1b9b12b50b635379c816a",
+        "adminMultiSig": "217a0f23891378e2b04ab829765b3d0ab9ccaa152ee2c96494573091e116db3d35560cdc2ae281fea81feabb4dd246750cc234fa0a0de3417f83e12d4c445a12",
+        "payloadHash": "c2d062a431868f80072fdf5ab26ff6c17313e8ec667d289729cec769d5f1aef1",
+        "blockHash": "18c39db26bfb932db22c9d9006d790e193b6782877b5bcf2c338526ae09f3d04",
+        "creatorSignature": "4512676f4f498a05ea064e124ab39070980bfa772c73ce98ca3a2958f2323c91302b0bc1fe38375b766ceec507b674b98e50a00d3dab2a5787f202e3b9c53979"
+    },
+    "hash": "a54c7600d0493126a5865e295d96654762e544ce134e13265a5e981fcd14db9f",
+    "sign": {
+        "comment": "Test2",
+        "signature": "",
+        "signedhash": ""
+    }
+}

@@ -94,7 +94,7 @@ def command(s):
             wallet = args[0].wallet
             password = kwargs.get('password')
             if c.requires_wallet and wallet is None:
-                raise Exception("wallet not loaded. Use 'electrum daemon load_wallet'")
+                raise Exception("wallet not loaded. Use 'efc daemon load_wallet'")
             if c.requires_password and password is None and wallet.has_password():
                 return {'error': 'Password required' }
             return func(*args, **kwargs)
@@ -334,7 +334,7 @@ class Commands:
     @command('')
     def dumpprivkeys(self):
         """Deprecated."""
-        return "This command is deprecated. Use a pipe instead: 'electrum listaddresses | electrum getprivatekeys - '"
+        return "This command is deprecated. Use a pipe instead: 'efc listaddresses | efc getprivatekeys - '"
 
     @command('')
     def validateaddress(self, address):
@@ -370,7 +370,7 @@ class Commands:
 
     @command('n')
     def getmerkle(self, txid, height):
-        """Get Merkle branch of a transaction included in a block. Electrum
+        """Get Merkle branch of a transaction included in a block. ElectrumFairChains
         uses this to verify transactions (Simple Payment Verification)."""
         return self.network.run_from_another_thread(self.network.get_merkle_for_transaction(txid, int(height)))
 
@@ -381,9 +381,9 @@ class Commands:
 
     @command('')
     def version(self):
-        """Return the version of electrum."""
-        from .version import ELECTRUMFAIR_VERSION
-        return ELECTRUMFAIR_VERSION
+        """Return the version of ElectrumFairChains."""
+        from .version import EFC_VERSION
+        return EFC_VERSION
 
     @command('w')
     def getmpk(self):
@@ -930,8 +930,8 @@ def add_global_options(parser):
     # const is for when no argument is given to verbosity
     # default is for when the flag is missing
     group.add_argument("-v", dest="verbosity", help="Set verbosity filter", default='', const='*', nargs='?')
-    group.add_argument("-D", "--dir", dest="electrumfair_path", help="electrumfair directory")
-    group.add_argument("-P", "--portable", action="store_true", dest="portable", default=False, help="Use local 'electrumfair_data' directory")
+    group.add_argument("-D", "--dir", dest="electrumfairchains_path", help="electrumfairchains directory")
+    group.add_argument("-P", "--portable", action="store_true", dest="portable", default=False, help="Use local 'electrumfairchains_data' directory")
     group.add_argument("-w", "--wallet", dest="wallet_path", help="wallet path")
     group.add_argument("--testnet", action="store_true", dest="testnet", default=False, help="Use Testnet")
     group.add_argument("--regtest", action="store_true", dest="regtest", default=False, help="Use Regtest")
@@ -940,11 +940,11 @@ def add_global_options(parser):
 def get_parser():
     # create main parser
     parser = argparse.ArgumentParser(
-        epilog="Run 'electrum help <command>' to see the help for a command")
+        epilog="Run 'efc help <command>' to see the help for a command")
     add_global_options(parser)
     subparsers = parser.add_subparsers(dest='cmd', metavar='<command>')
     # gui
-    parser_gui = subparsers.add_parser('gui', description="Run Electrum's Graphical User Interface.", help="Run GUI (default)")
+    parser_gui = subparsers.add_parser('gui', description="Run ElectrumFairChains Graphical User Interface.", help="Run GUI (default)")
     parser_gui.add_argument("url", nargs='?', default=None, help="faircoin URI (or bip70 file)")
     parser_gui.add_argument("-g", "--gui", dest="gui", help="select graphical user interface", choices=['qt', 'kivy', 'text', 'stdio'])
     parser_gui.add_argument("-o", "--offline", action="store_true", dest="offline", default=False, help="Run offline")

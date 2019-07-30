@@ -26,7 +26,7 @@
 import os
 import json
 
-from .util import inv_dict
+# from .util import inv_dict
 
 def read_json(filename, default):
     path = os.path.join(os.path.dirname(__file__)+'/fairchains/', filename)
@@ -36,6 +36,9 @@ def read_json(filename, default):
     except:
         r = default
     return r
+
+def inv_dict(d):
+    return {v: k for k, v in d.items()}
 
 # class AbstractNet:
 
@@ -51,6 +54,12 @@ class FairChains():
     FCx=read_json(FCs[0]+'.electrumx.json', {})
 
     TESTNET = False
+
+    NAME            = FC['data']['currencyName']
+    SHORTNAME       = FC['data']['currencySymbol']
+    BLOCKEXPLORER   = FCx['BLOCKEXPLORER']
+    BLOCKEXPLORER_DEFAULT   = FCx['BLOCKEXPLORER_DEFAULT']
+    EXCHANGE_RATES  = FCx['EXCHANGE_RATES']
 
     WIF_PREFIX      = FC['data']['secretKeyVersion']
     ADDRTYPE_P2PKH  = FC['data']['pubKeyAddrVersion']

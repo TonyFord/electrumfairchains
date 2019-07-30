@@ -34,7 +34,7 @@ from typing import Dict, Optional, Tuple
 import jsonrpclib
 
 from .jsonrpc import VerifyingJSONRPCServer
-from .version import ELECTRUMFAIR_VERSION
+from .version import EFC_VERSION
 from .network import Network
 from .util import (json_decode, DaemonThread, print_error, to_string,
                    create_and_start_event_loop, profiler, standardize_path)
@@ -209,7 +209,7 @@ class Daemon(DaemonThread):
                     'spv_nodes': len(self.network.get_interfaces()),
                     'connected': self.network.is_connected(),
                     'auto_connect': net_params.auto_connect,
-                    'version': ELECTRUMFAIR_VERSION,
+                    'version': EFC_VERSION,
                     'wallets': {k: w.is_up_to_date()
                                 for k, w in self.wallets.items()},
                     'current_wallet': current_wallet_path,
@@ -233,7 +233,7 @@ class Daemon(DaemonThread):
             else:
                 response = "error: current GUI does not support multiple windows"
         else:
-            response = "Error: Electrum is running in daemon mode. Please stop the daemon first."
+            response = "Error: ElectrumFairChains is running in daemon mode. Please stop the daemon first."
         return response
 
     def load_wallet(self, path, password) -> Optional[Abstract_Wallet]:
@@ -297,7 +297,7 @@ class Daemon(DaemonThread):
             path = standardize_path(path)
             wallet = self.wallets.get(path)
             if wallet is None:
-                return {'error': 'Wallet "%s" is not loaded. Use "electrumfair daemon load_wallet"'%os.path.basename(path) }
+                return {'error': 'Wallet "%s" is not loaded. Use "efc daemon load_wallet"'%os.path.basename(path) }
         else:
             wallet = None
         # arguments passed to function

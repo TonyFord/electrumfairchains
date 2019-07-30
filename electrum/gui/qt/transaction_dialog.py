@@ -59,7 +59,7 @@ def show_transaction(tx, parent, desc=None, prompt_if_unsaved=False):
         d = TxDialog(tx, parent, desc, prompt_if_unsaved)
     except SerializationError as e:
         traceback.print_exc(file=sys.stderr)
-        parent.show_critical(_("Electrum was unable to deserialize the transaction:") + "\n" + str(e))
+        parent.show_critical(_("ElectrumFairChains was unable to deserialize the transaction:") + "\n" + str(e))
     else:
         dialogs.append(d)
         d.show()

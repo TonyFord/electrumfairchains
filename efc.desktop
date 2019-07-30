@@ -1,0 +1,16 @@
+# If you want efc to appear in a linux app launcher ("start menu"), install this by doing:
+# sudo desktop-file-install efc.desktop
+
+[Desktop Entry]
+Comment=Lightweight FairChains Client
+Exec=efc %u
+GenericName[en_US]=ElectrumFairchains
+GenericName=ElectrumFairchains
+Icon=efc
+Name[en_US]=Electrum FairChains Wallet
+Name=Electrum FairChains Wallet
+Categories=Network;
+StartupNotify=false
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/faircoin;

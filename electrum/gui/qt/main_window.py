@@ -64,7 +64,7 @@ from electrum.transaction import Transaction, TxOutput
 from electrum.address_synchronizer import AddTransactionException
 from electrum.wallet import (Multisig_Wallet, CannotBumpFee, Abstract_Wallet,
                              sweep_preparations, InternalAddressCorruption)
-from electrum.version import ELECTRUMFAIR_VERSION
+from electrum.version import EFC_VERSION
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 from electrum.exchange_rate import FxThread
 from electrum.simple_config import SimpleConfig
@@ -193,7 +193,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if self.config.get("is_maximized"):
             self.showMaximized()
 
-        self.setWindowIcon(read_QIcon("electrumfair.png"))
+        self.setWindowIcon(read_QIcon("efc.png"))
         self.init_menubar()
 
         wrtabs = weakref.proxy(tabs)
@@ -238,9 +238,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         # If the option hasn't been set yet
         if config.get('check_updates') is None:
             choice = QMessageBox.question(self,
-                                 "ElectrumFair - " + _("Enable update check"),
-                                 _("For security reasons we advise that you always use the latest version of ElectrumFair.") + " " +
-                                 _("Would you like to be notified when there is a newer version of ElectrumFair available?"),
+                                 "ElectrumFairChains - " + _("Enable update check"),
+                                 _("For security reasons we advise that you always use the latest version of ElectrumFairChains.") + " " +
+                                 _("Would you like to be notified when there is a newer version of ElectrumFairChains available?"),
                                  QMessageBox.Yes,
                                  QMessageBox.No)
             config.set_key('check_updates', choice == QMessageBox.Yes, save=True)
@@ -250,7 +250,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             # to prevent GC from getting in our way.
             def on_version_received(v):
                 if UpdateCheck.is_newer(v):
-                    self.update_check_button.setText(_("Update to ElectrumFair {} is available").format(v))
+                    self.update_check_button.setText(_("Update to ElectrumFairChains {} is available").format(v))
                     self.update_check_button.clicked.connect(lambda: self.show_update_check(v))
                     self.update_check_button.show()
             self._update_check_thread = UpdateCheckThread(self)
@@ -448,8 +448,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             self.setGeometry(100, 100, 840, 400)
 
     def watching_only_changed(self):
-        name = "ElectrumFair Testnet" if constants.net.TESTNET else "ElectrumFair"
-        title = '%s %s  -  %s' % (name, ELECTRUMFAIR_VERSION, self.wallet.basename())
+        name = "ElectrumFairChains Testnet" if constants.net.TESTNET else "ElectrumFairChains"
+        title = '%s %s  -  %s' % (name, EFC_VERSION, self.wallet.basename())
         extra = [self.wallet.storage.get('wallet_type', '?')]
         if self.wallet.is_watching_only():
             extra.append(_('watching only'))
@@ -464,8 +464,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if self.wallet.is_watching_only():
             msg = ' '.join([
                 _("This wallet is watching-only."),
-                _("This means you will not be able to spend FairCoins with it."),
-                _("Make sure you own the seed phrase or the private keys, before you request FairCoins to be sent to this wallet.")
+                _("This means you will not be able to spend Coins with it."),
+                _("Make sure you own the seed phrase or the private keys, before you request Coins to be sent to this wallet.")
             ])
             self.show_warning(msg, title=_('Information'))
 
@@ -493,7 +493,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
                 shutil.copy2(path, new_path)
                 self.show_message(_("A copy of your wallet file was created in")+" '%s'" % str(new_path), title=_("Wallet backup created"))
             except BaseException as reason:
-                self.show_critical(_("Electrum was unable to copy your wallet file to the specified location.") + "\n" + str(reason), title=_("Unable to create backup"))
+                self.show_critical(_("ElectrumFairChains was unable to copy your wallet file to the specified location.") + "\n" + str(reason), title=_("Unable to create backup"))
 
     def update_recently_visited(self, filename):
         recent = self.config.get('recently_open', [])
@@ -587,7 +587,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         tools_menu = menubar.addMenu(_("&Tools"))
 
         # Settings / Preferences are all reserved keywords in macOS using this as work around
-        tools_menu.addAction(_("Electrum preferences") if sys.platform == 'darwin' else _("Preferences"), self.settings_dialog)
+        tools_menu.addAction(_("ElectrumFairChains preferences") if sys.platform == 'darwin' else _("Preferences"), self.settings_dialog)
         tools_menu.addAction(_("&Network"), lambda: self.gui_object.show_network_dialog(self))
         tools_menu.addAction(_("&Plugins"), self.plugins_dialog)
         tools_menu.addSeparator()
@@ -608,9 +608,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         help_menu = menubar.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self.show_about)
         help_menu.addAction(_("&Check for updates"), self.show_update_check)
-        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("https://download.faircoin.world"))
+        help_menu.addAction(_("&Official website"), lambda: webbrowser.open("https://github.com/fairchainsx/electrumfairchains/releases"))
         help_menu.addSeparator()
-        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("http://docs.electrum.org/")).setShortcut(QKeySequence.HelpContents)
+        help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("https://github.com/fairchainsx/electrumfairchains/README.md")).setShortcut(QKeySequence.HelpContents)
         help_menu.addAction(_("&Report Bug"), self.show_report_bug)
         help_menu.addSeparator()
         help_menu.addAction(_("&Donate to server"), self.donate_to_server)
@@ -626,13 +626,13 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             self.show_error(_('No donation address for this server'))
 
     def show_about(self):
-        QMessageBox.about(self, "ElectrumFair",
-                          (_("Version")+" %s" % ELECTRUMFAIR_VERSION + "\n\n" +
-                           _("Electrum's focus is speed, with low resource usage and simplifying Faircoin.") + " " +
+        QMessageBox.about(self, "ElectrumFairChains",
+                          (_("Version")+" %s" % EFC_VERSION + "\n\n" +
+                           _("Electrum's focus is speed, with low resource usage and simplifying.") + " " +
                            _("You do not need to perform regular backups, because your wallet can be "
                               "recovered from a secret phrase that you can memorize or write on paper.") + " " +
                            _("Startup times are instant because it operates in conjunction with high-performance "
-                              "servers that handle the most complicated parts of the Faircoin system.") + "\n\n" +
+                              "servers that handle the most complicated parts of the Fairchains system.") + "\n\n" +
                            _("Uses icons from the Icons8 icon pack (icons8.com)."))
                          )
 
@@ -642,11 +642,11 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
     def show_report_bug(self):
         msg = ' '.join([
             _("Please report any bugs as issues on github:<br/>"),
-            "<a href=\"https://github.com/faircoin/electrumfair/issues\">https://github.com/faircoin/electrumfair/issues</a><br/><br/>",
-            _("Before reporting a bug, upgrade to the most recent version of ElectrumFair (latest release or git HEAD), and include the version number in your report."),
+            "<a href=\"https://github.com/fairchainsx/electrumfairchains/issues\">https://github.com/fairchainsx/electrumfairchains/issues</a><br/><br/>",
+            _("Before reporting a bug, upgrade to the most recent version of ElectrumFairChains (latest release or git HEAD), and include the version number in your report."),
             _("Try to explain not only what the bug is, but how it occurs.")
          ])
-        self.show_message(msg, title="ElectrumFair - " + _("Reporting Bugs"), rich_text=True)
+        self.show_message(msg, title="ElectrumFairChains - " + _("Reporting Bugs"), rich_text=True)
 
     def notify_transactions(self):
         if self.tx_notification_queue.qsize() == 0:
@@ -686,9 +686,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if self.tray:
             try:
                 # this requires Qt 5.9
-                self.tray.showMessage("ElectrumFair", message, read_QIcon("electrumfair_dark_icon"), 20000)
+                self.tray.showMessage("ElectrumFairChains", message, read_QIcon("efc_dark_icon"), 20000)
             except TypeError:
-                self.tray.showMessage("ElectrumFair", message, QSystemTrayIcon.Information, 20000)
+                self.tray.showMessage("ElectrumFairChains", message, QSystemTrayIcon.Information, 20000)
 
 
 
@@ -873,7 +873,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.receive_address_e = ButtonsLineEdit()
         self.receive_address_e.addCopyButton(self.app)
         self.receive_address_e.setReadOnly(True)
-        msg = _('FairCoin address where the payment should be received. Note that each payment request uses a different FairCoin address.')
+        msg = _('Coin address where the payment should be received. Note that each payment request uses a different Coin address.')
         self.receive_address_label = HelpLabel(_('Receiving address'), msg)
         self.receive_address_e.textChanged.connect(self.update_receive_qr)
         self.receive_address_e.setFocusPolicy(Qt.ClickFocus)
@@ -903,8 +903,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         msg = ' '.join([
             _('Expiration date of your request.'),
             _('This information is seen by the recipient if you send them a signed payment request.'),
-            _('Expired requests have to be deleted manually from your list, in order to free the corresponding FairCoin addresses.'),
-            _('The FairCoin address never expires and will always be part of this electrum wallet.'),
+            _('Expired requests have to be deleted manually from your list, in order to free the corresponding Coin addresses.'),
+            _('The Coin address never expires and will always be part of this electrumfairchains wallet.'),
         ])
         grid.addWidget(HelpLabel(_('Request expires'), msg), 3, 0)
         grid.addWidget(self.expires_combo, 3, 1)
@@ -1136,7 +1136,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.amount_e = BTCAmountEdit(self.get_decimal_point)
         self.payto_e = PayToEdit(self)
         msg = _('Recipient of the funds.') + '\n\n'\
-              + _('You may enter a FairCoin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a FairCoin address)')
+              + _('You may enter a Coin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a Coin address)')
         payto_label = HelpLabel(_('Pay to'), msg)
         grid.addWidget(payto_label, 1, 0)
         grid.addWidget(self.payto_e, 1, 1, 1, -1)
@@ -1243,7 +1243,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         def feerounding_onclick():
             text = (self.feerounding_text + '\n\n' +
-                    _('To somewhat protect your privacy, Electrum tries to create change with similar precision to other outputs.') + ' ' +
+                    _('To somewhat protect your privacy, ElectrumFairChains tries to create change with similar precision to other outputs.') + ' ' +
                     _('At most 100 satoshis might be lost due to this rounding.') + ' ' +
                     _("You can disable this setting in '{}'.").format(_('Preferences')) + '\n' +
                     _('Also, dust is not kept as change, but added to the fee.')  + '\n' +
@@ -1572,10 +1572,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         for o in outputs:
             if o.address is None:
-                self.show_error(_('Faircoin Address is None'))
+                self.show_error(_('Coin Address is None'))
                 return
             if o.type == TYPE_ADDRESS and not bitcoin.is_address(o.address):
-                self.show_error(_('Invalid Faircoin Address'))
+                self.show_error(_('Invalid Coin Address'))
                 return
             if o.value is None:
                 self.show_error(_('Invalid Amount'))
@@ -2276,14 +2276,14 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
                 "private key, and verifying with the corresponding public key. The "
                 "address you have entered does not have a unique public key, so these "
                 "operations cannot be performed.") + '\n\n' + \
-               _('The operation is undefined. Not just in Electrum, but in general.')
+               _('The operation is undefined. Not just in ElectrumFairChains, but in general.')
 
     @protected
     def do_sign(self, address, message, signature, password):
         address  = address.text().strip()
         message = message.toPlainText().strip()
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid FairCoin address.'))
+            self.show_message(_('Invalid Coin address.'))
             return
         if self.wallet.is_watching_only():
             self.show_message(_('This is a watching-only wallet.'))
@@ -2311,7 +2311,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         address  = address.text().strip()
         message = message.toPlainText().strip().encode('utf-8')
         if not bitcoin.is_address(address):
-            self.show_message(_('Invalid FairCoin address.'))
+            self.show_message(_('Invalid Coin address.'))
             return
         try:
             # This can throw on invalid base64
@@ -2445,7 +2445,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             tx = tx_from_str(txt)
             return Transaction(tx)
         except BaseException as e:
-            self.show_critical(_("Electrum was unable to parse your transaction") + ":\n" + str(e))
+            self.show_critical(_("ElectrumFairChains was unable to parse your transaction") + ":\n" + str(e))
             return
 
     def read_tx_from_qrcode(self):
@@ -2480,7 +2480,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             with open(fileName, "r") as f:
                 file_content = f.read()
         except (ValueError, IOError, os.error) as reason:
-            self.show_critical(_("Electrum was unable to open your transaction file") + "\n" + str(reason), title=_("Unable to read file or no transaction found"))
+            self.show_critical(_("ElectrumFairChains was unable to open your transaction file") + "\n" + str(reason), title=_("Unable to read file or no transaction found"))
             return
         return self.tx_from_text(file_content)
 
@@ -2534,7 +2534,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         e.setReadOnly(True)
         vbox.addWidget(e)
 
-        defaultname = 'electrumfair-private-keys.csv'
+        defaultname = 'efc-private-keys.csv'
         select_msg = _('Select file to export your private keys to')
         hbox, filename_e, csv_button = filename_field(self, self.config, defaultname, select_msg)
         vbox.addLayout(hbox)
@@ -2592,7 +2592,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             self.do_export_privkeys(filename, private_keys, csv_button.isChecked())
         except (IOError, os.error) as reason:
             txt = "\n".join([
-                _("Electrum was unable to produce a private key-export."),
+                _("ElectrumFairChains was unable to produce a private key-export."),
                 str(reason)
             ])
             self.show_critical(txt, title=_("Unable to create csv"))
@@ -2896,7 +2896,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         units = base_units_list
         msg = (_('Base unit of your wallet.')
-              + '\n1 FAIR = 1000 mFAIR. 1mFAIR = 1000 uFair. 1 uFair = 100 sat.\n'
+              + '\n1 = 1000m. 1m = 1000u. 1u = 100sat.\n'
               + _(' These settings affects the Send tab, and all balance related fields.'))
         unit_label = HelpLabel(_('Base unit') + ':', msg)
         unit_combo = QComboBox()
@@ -3173,7 +3173,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         run_hook('close_settings_dialog')
         if self.need_restart:
-            self.show_warning(_('Please restart Electrum to activate the new GUI settings'), title=_('Success'))
+            self.show_warning(_('Please restart ElectrumFairChains to activate the new GUI settings'), title=_('Success'))
 
 
     def closeEvent(self, event):
@@ -3204,7 +3204,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.gui_object.close_window(self)
 
     def plugins_dialog(self):
-        self.pluginsdialog = d = WindowModalDialog(self, _('ElectrumFair Plugins'))
+        self.pluginsdialog = d = WindowModalDialog(self, _('ElectrumFairChains Plugins'))
 
         plugins = self.gui_object.plugins
 

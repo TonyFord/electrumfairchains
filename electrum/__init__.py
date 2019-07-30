@@ -1,4 +1,4 @@
-from .version import ELECTRUMFAIR_VERSION
+from .version import EFC_VERSION
 from .util import format_satoshis, print_msg, print_error, set_verbosity
 from .wallet import Wallet
 from .storage import WalletStorage
@@ -14,4 +14,4 @@ from .plugin import BasePlugin
 from .commands import Commands, known_commands
 
 
-__version__ = ELECTRUMFAIR_VERSION
+__version__ = EFC_VERSION

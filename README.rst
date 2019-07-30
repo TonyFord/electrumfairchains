@@ -46,8 +46,8 @@ Development version
 
 Check out the code from GitHub::
 
-    git clone git://github.com/faircoin/electrumfair.git
-    cd electrumfair
+    git clone https://github.com/fairchainsx/electrumfairchains
+    cd electrumfairchains
 
 Run install (this should install dependencies)::
 
@@ -69,13 +69,13 @@ Create translations (optional)::
 Install on Linux systems
 ========================
 
-If you install Electrum on your system, you can run it from any
+If you install ElectrumFairChains on your system, you can run it from any
 directory.
 
 If you have pip, you can do::
 
     python setup.py sdist
-    sudo pip install --pre dist/ElectrumFair-2.0.tar.gz
+    sudo pip install --pre dist/ElectrumFairChains-2.0.tar.gz
 
 
 If you don't have pip, install with::

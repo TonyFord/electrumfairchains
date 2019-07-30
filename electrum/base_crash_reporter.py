@@ -27,7 +27,7 @@ import subprocess
 import sys
 import os
 
-from .version import ELECTRUMFAIR_VERSION
+from .version import EFC_VERSION
 from . import constants
 from .i18n import _
 from .util import make_aiohttp_session
@@ -43,14 +43,14 @@ class BaseCrashReporter:
 
 <h2>Additional information</h2>
 <ul>
-  <li>Electrum version: {app_version}</li>
+  <li>ElectrumFairChains version: {app_version}</li>
   <li>Python version: {python_version}</li>
   <li>Operating system: {os}</li>
   <li>Wallet type: {wallet_type}</li>
   <li>Locale: {locale}</li>
 </ul>
     """
-    CRASH_MESSAGE = _('Something went wrong while executing Electrum.')
+    CRASH_MESSAGE = _('Something went wrong while executing ElectrumFairChains.')
     CRASH_TITLE = _('Sorry!')
     REQUEST_HELP_MESSAGE = _('To help us diagnose and fix the problem, you can send us a bug report that contains '
                              'useful debug information:')
@@ -93,7 +93,7 @@ class BaseCrashReporter:
 
     def get_additional_info(self):
         args = {
-            "app_version": ELECTRUMFAIR_VERSION,
+            "app_version": EFC_VERSION,
             "python_version": sys.version,
             "os": self.get_os_version(),
             "wallet_type": "unknown",
