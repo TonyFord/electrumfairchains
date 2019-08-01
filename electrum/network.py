@@ -47,14 +47,14 @@ from .util import (PrintError, print_error, log_exceptions, ignore_exceptions,
                    is_hash256_str, is_non_negative_integer)
 
 from .bitcoin import COIN
-from . import constants
+# from . import constants
 from . import blockchain
 from . import bitcoin
 from .blockchain import Blockchain, HEADER_SIZE
 from .interface import (Interface, serialize_server, deserialize_server,
                         RequestTimedOut, NetworkTimeout)
 from .version import PROTOCOL_VERSION
-from .simple_config import SimpleConfig
+from .simple_config import SimpleConfig, FairChains
 from .i18n import _
 
 NODES_RETRY_INTERVAL = 60
@@ -73,7 +73,7 @@ def parse_servers(result: Sequence[Tuple[str, str, List[str]]]) -> Dict[str, dic
             for v in item[2]:
                 if re.match(r"[st]\d*", v):
                     protocol, port = v[0], v[1:]
-                    if port == '': port = constants.net.DEFAULT_PORTS[protocol]
+                    if port == '': port = FairChains.DEFAULT_PORTS[protocol]
                     out[protocol] = port
                 elif re.match("v(.?)+", v):
                     version = v[1:]
@@ -113,7 +113,7 @@ def filter_protocol(hostmap, protocol='s'):
 
 def pick_random_server(hostmap = None, protocol = 's', exclude_set = set()):
     if hostmap is None:
-        hostmap = constants.net.DEFAULT_SERVERS
+        hostmap = FairChains.DEFAULT_SERVERS
     eligible = list(set(filter_protocol(hostmap, protocol)) - exclude_set)
     return random.choice(eligible) if eligible else None
 
@@ -461,7 +461,7 @@ class Network(PrintError):
     @with_recent_servers_lock
     def get_servers(self):
         # start with hardcoded servers
-        out = dict(constants.net.DEFAULT_SERVERS)  # copy
+        out = dict(FairChains.DEFAULT_SERVERS)  # copy
         # add recent servers
         for s in self.recent_servers:
             try:
@@ -751,7 +751,7 @@ class Network(PrintError):
     async def _init_headers_file(self):
         b = blockchain.get_best_chain()
         filename = b.path()
-        length = HEADER_SIZE * len(constants.net.CHECKPOINTS) * 2016
+        length = HEADER_SIZE * len(FairChains.CHECKPOINTS) * 2016
         if not os.path.exists(filename) or os.path.getsize(filename) < length:
             with open(filename, 'wb') as f:
                 if length > 0:

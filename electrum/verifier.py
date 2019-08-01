@@ -33,7 +33,7 @@ from .transaction import Transaction
 from .blockchain import hash_header
 from .interface import GracefulDisconnect
 from .network import UntrustedServerReturnedError
-from . import constants
+# from . import constants
 
 if TYPE_CHECKING:
     from .network import Network
@@ -87,7 +87,7 @@ class SPV(NetworkJobOnDefaultServer):
             header = self.blockchain.read_header(tx_height)
             if header is None:
                 # if tx_height < constants.net.max_checkpoint():
-                if tx_height < 0: 
+                if tx_height < 0:
                     await self.group.spawn(self.network.request_chunk(tx_height, None, can_return_early=True))
                 continue
             # request now

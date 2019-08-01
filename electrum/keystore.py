@@ -28,7 +28,7 @@ from unicodedata import normalize
 import hashlib
 from typing import Tuple
 
-from . import bitcoin, ecc, constants, bip32
+from . import bitcoin, ecc, bip32
 from .bitcoin import (deserialize_privkey, serialize_privkey,
                       public_key_to_p2pkh)
 from .bip32 import (convert_bip32_path_to_list_of_uint32, BIP32_PRIME,
@@ -40,6 +40,7 @@ from .util import (PrintError, InvalidPassword, WalletFileException,
                    BitcoinException, bh2u, bfh, print_error, inv_dict)
 from .mnemonic import Mnemonic, load_wordlist, seed_type, is_seed
 from .plugin import run_hook
+from .simple_config import SimpleConfig, FairChains
 
 
 class KeyStore(PrintError):
@@ -775,14 +776,14 @@ is_bip32_key = lambda x: is_xprv(x) or is_xpub(x)
 
 
 def bip44_derivation(account_id, bip43_purpose=44):
-    coin = constants.net.BIP44_COIN_TYPE
+    coin = FairChains.BIP44_COIN_TYPE
     return "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
 
 
 def purpose48_derivation(account_id: int, xtype: str) -> str:
     # m / purpose' / coin_type' / account' / script_type' / change / address_index
     bip43_purpose = 48
-    coin = constants.net.BIP44_COIN_TYPE
+    coin = FairChains.BIP44_COIN_TYPE
     account_id = int(account_id)
     script_type_int = PURPOSE48_SCRIPT_TYPES.get(xtype)
     if script_type_int is None:

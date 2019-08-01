@@ -31,7 +31,7 @@ from PyQt5.QtWidgets import (QWidget, QLabel, QPushButton, QTextEdit,
                              QMessageBox, QHBoxLayout, QVBoxLayout)
 
 from electrum.i18n import _
-from electrum.base_crash_reporter import BaseCrashReporter
+# from electrum.base_crash_reporter import BaseCrashReporter
 from .util import MessageBoxMixin, read_QIcon
 
 

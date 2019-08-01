@@ -53,25 +53,24 @@ if TYPE_CHECKING:
     from .interface import Interface
     from .simple_config import SimpleConfig
 
-from electrum.constants import FairChains
+from electrum.constants import FairChains_Collection
 
 def inv_dict(d):
     return {v: k for k, v in d.items()}
 
 ca_path = certifi.where()
 
+# base_units = { FairChains.SHORTNAME : 8, 'm'+FairChains.SHORTNAME : 5, 'u'+FairChains.SHORTNAME : 2, 'sat':0}
+# base_units_inverse = inv_dict(base_units)
+# base_units_list = [ FairChains_.SHORTNAME, 'm'+FairChains_.SHORTNAME, 'u'+FairChains_.SHORTNAME, 'sat']  # list(dict) does not guarantee order
 
-base_units = { FairChains.SHORTNAME : 8, 'm'+FairChains.SHORTNAME : 5, 'u'+FairChains.SHORTNAME : 2, 'sat':0}
-base_units_inverse = inv_dict(base_units)
-base_units_list = [ FairChains.SHORTNAME, 'm'+FairChains.SHORTNAME, 'u'+FairChains.SHORTNAME, 'sat']  # list(dict) does not guarantee order
-
-DECIMAL_POINT_DEFAULT = 8  # mBTC
+# DECIMAL_POINT_DEFAULT = 8  # mBTC
 
 
 class UnknownBaseUnit(Exception): pass
 
 
-def decimal_point_to_base_unit_name(dp: int) -> str:
+def decimal_point_to_base_unit_name(base_units_inverse, dp: int) -> str:
     # e.g. 8 -> "BTC"
     try:
         return base_units_inverse[dp]
@@ -79,7 +78,7 @@ def decimal_point_to_base_unit_name(dp: int) -> str:
         raise UnknownBaseUnit(dp) from None
 
 
-def base_unit_name_to_decimal_point(unit_name: str) -> int:
+def base_unit_name_to_decimal_point(base_units,unit_name: str) -> int:
     # e.g. "BTC" -> 8
     try:
         return base_units[unit_name]
@@ -383,6 +382,7 @@ def ensure_sparse_file(filename):
 
 
 def get_headers_dir(config):
+    print( config.path )
     return config.path
 
 
@@ -477,13 +477,12 @@ def bh2u(x: bytes) -> str:
     """
     return x.hex()
 
-
 def user_dir():
 
     if 'ANDROID_DATA' in os.environ:
         return android_data_dir()
     elif os.name == 'posix':
-        return os.path.join(os.environ["HOME"], ".electrumfairchains." + FairChains.NAME )
+        return os.path.join(os.environ["HOME"], ".electrumfairchains" )
     elif "APPDATA" in os.environ:
         return os.path.join(os.environ["APPDATA"], "ElectrumFairChains")
     elif "LOCALAPPDATA" in os.environ:
@@ -491,7 +490,6 @@ def user_dir():
     else:
         #raise Exception("No home directory found in environment variables.")
         return
-
 
 def resource_path(*parts):
     return os.path.join(pkg_dir, *parts)
@@ -645,36 +643,16 @@ def time_difference(distance_in_time, include_seconds):
     else:
         return "over %d years" % (round(distance_in_minutes / 525600))
 
-mainnet_block_explorers = FairChains.BLOCKEXPLORER
-
-# mainnet_block_explorers = {
-#    'Chain Fair': ('http://chain.fair.to/',
-#                        {'tx': 'transaction?transaction=', 'addr': 'address?address='}),
-#    'system default': ('blockchain:',
-#                        {'tx': 'tx', 'addr': 'address'}),
-# }
-
-testnet_block_explorers = {
-    'system default': ('blockchain:',
-                       {'tx': 'tx', 'addr': 'address'}),
-
-}
-
-def block_explorer_info():
-    from . import constants
-    return mainnet_block_explorers if not constants.net.TESTNET else testnet_block_explorers
-
-def block_explorer(config: 'SimpleConfig') -> str:
-    from . import constants
+def block_explorer(config: 'SimpleConfig', FairChains) -> str:
     default_ = FairChains.BLOCKEXPLORER_DEFAULT
     be_key = config.get('block_explorer', default_)
-    be = block_explorer_info().get(be_key)
+    be = FairChains.BLOCKEXPLORER.get(be_key)
     return be_key if be is not None else default_
 
-def block_explorer_tuple(config: 'SimpleConfig') -> Optional[Tuple[str, dict]]:
-    return block_explorer_info().get(block_explorer(config))
+def block_explorer_tuple(config: 'SimpleConfig', FairChains) -> Optional[Tuple[str, dict]]:
+    return FairChains.BLOCKEXPLORER.get(block_explorer(config))
 
-def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str) -> Optional[str]:
+def block_explorer_URL(config: 'SimpleConfig', kind: str, item: str, FairChains) -> Optional[str]:
     be_tuple = block_explorer_tuple(config)
     if not be_tuple:
         return

@@ -27,10 +27,9 @@ import hashlib
 from typing import List, Tuple, TYPE_CHECKING, Optional, Union
 from enum import IntEnum
 
-from .util import bfh, bh2u, BitcoinException, assert_bytes, to_bytes, inv_dict
+from .util import ( bfh, bh2u, BitcoinException, assert_bytes, to_bytes, inv_dict )
 from . import version
 from . import segwit_addr
-from . import constants
 from . import ecc
 from .crypto import sha256d, sha256, hash_160, hmac_oneshot
 
@@ -39,11 +38,11 @@ if TYPE_CHECKING:
 
 ################################## transactions
 
-import electrum.constants
+from .simple_config import SimpleConfig, FairChains
 
-COINBASE_MATURITY = constants.FairChains.COINBASE_MATURITY
+COINBASE_MATURITY = FairChains.COINBASE_MATURITY
 COIN = 100000000
-TOTAL_COIN_SUPPLY_LIMIT_IN_BTC = constants.FairChains.TOTAL_SUPPLY_LIMIT
+TOTAL_COIN_SUPPLY_LIMIT_IN_BTC = FairChains.TOTAL_SUPPLY_LIMIT
 
 # supported types of transaction outputs
 TYPE_ADDRESS = 0
@@ -326,27 +325,27 @@ def b58_address_to_hash160(addr: str) -> Tuple[int, bytes]:
 
 
 def hash160_to_p2pkh(h160: bytes, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return hash160_to_b58_address(h160, net.ADDRTYPE_P2PKH)
 
 def hash160_to_p2sh(h160: bytes, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return hash160_to_b58_address(h160, net.ADDRTYPE_P2SH)
 
 def public_key_to_p2pkh(public_key: bytes, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return hash160_to_p2pkh(hash_160(public_key), net=net)
 
 def hash_to_segwit_addr(h: bytes, witver: int, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return segwit_addr.encode(net.SEGWIT_HRP, witver, h)
 
 def public_key_to_p2wpkh(public_key: bytes, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return hash_to_segwit_addr(hash_160(public_key), witver=0, net=net)
 
 def script_to_p2wsh(script: str, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return hash_to_segwit_addr(sha256(bfh(script)), witver=0, net=net)
 
 def p2wpkh_nested_script(pubkey: str) -> str:
@@ -358,7 +357,7 @@ def p2wsh_nested_script(witness_script: str) -> str:
     return '00' + push_script(wsh)
 
 def pubkey_to_address(txin_type: str, pubkey: str, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     if txin_type == 'p2pkh':
         return public_key_to_p2pkh(bfh(pubkey), net=net)
     elif txin_type == 'p2wpkh':
@@ -370,7 +369,7 @@ def pubkey_to_address(txin_type: str, pubkey: str, *, net=None) -> str:
         raise NotImplementedError(txin_type)
 
 def redeem_script_to_address(txin_type: str, redeem_script: str, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     if txin_type == 'p2sh':
         return hash160_to_p2sh(hash_160(bfh(redeem_script)), net=net)
     elif txin_type == 'p2wsh':
@@ -389,7 +388,7 @@ def script_to_address(script: str, *, net=None) -> str:
     return addr
 
 def address_to_script(addr: str, *, net=None) -> str:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     if not is_address(addr, net=net):
         raise BitcoinException(f"invalid bitcoin address: {addr}")
     witver, witprog = segwit_addr.decode(net.SEGWIT_HRP, addr)
@@ -534,9 +533,9 @@ def serialize_privkey(secret: bytes, compressed: bool, txin_type: str,
     # we only export secrets inside curve range
     secret = ecc.ECPrivkey.normalize_secret_bytes(secret)
     if internal_use:
-        prefix = bytes([(WIF_SCRIPT_TYPES[txin_type] + constants.net.WIF_PREFIX) & 255])
+        prefix = bytes([(WIF_SCRIPT_TYPES[txin_type] + FairChains.WIF_PREFIX) & 255])
     else:
-        prefix = bytes([constants.net.WIF_PREFIX])
+        prefix = bytes([FairChains.WIF_PREFIX])
     suffix = b'\01' if compressed else b''
     vchIn = prefix + secret + suffix
     base58_wif = EncodeBase58Check(vchIn)
@@ -564,14 +563,14 @@ def deserialize_privkey(key: str) -> Tuple[str, bytes, bool]:
 
     if txin_type is None:
         # keys exported in version 3.0.x encoded script type in first byte
-        prefix_value = vch[0] - constants.net.WIF_PREFIX
+        prefix_value = vch[0] - FairChains.WIF_PREFIX
         try:
             txin_type = WIF_SCRIPT_TYPES_INV[prefix_value]
         except KeyError:
             raise BitcoinException('invalid prefix ({}) for WIF key (1)'.format(vch[0]))
     else:
         # all other keys must have a fixed first byte
-        if vch[0] != constants.net.WIF_PREFIX:
+        if vch[0] != FairChains.WIF_PREFIX:
             raise BitcoinException('invalid prefix ({}) for WIF key (2)'.format(vch[0]))
 
     if len(vch) not in [33, 34]:
@@ -593,7 +592,7 @@ def address_from_private_key(sec: str) -> str:
     return pubkey_to_address(txin_type, public_key)
 
 def is_segwit_address(addr: str, *, net=None) -> bool:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     try:
         witver, witprog = segwit_addr.decode(net.SEGWIT_HRP, addr)
     except Exception as e:
@@ -601,7 +600,7 @@ def is_segwit_address(addr: str, *, net=None) -> bool:
     return witprog is not None
 
 def is_b58_address(addr: str, *, net=None) -> bool:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     try:
         addrtype, h = b58_address_to_hash160(addr)
     except Exception as e:
@@ -611,7 +610,7 @@ def is_b58_address(addr: str, *, net=None) -> bool:
     return addr == hash160_to_b58_address(h, addrtype)
 
 def is_address(addr: str, *, net=None) -> bool:
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     return is_segwit_address(addr, net=net) \
            or is_b58_address(addr, net=net)
 

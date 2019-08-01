@@ -18,8 +18,7 @@ from .i18n import _
 from .util import (PrintError, ThreadJob, make_dir, log_exceptions,
                    make_aiohttp_session, resource_path)
 from .network import Network
-from .simple_config import SimpleConfig
-from electrum.constants import FairChains
+from .simple_config import SimpleConfig, FairChains
 
 
 DEFAULT_ENABLED = False

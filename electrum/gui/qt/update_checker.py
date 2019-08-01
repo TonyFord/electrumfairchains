@@ -11,7 +11,8 @@ from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QLabel, QProgressBar,
                              QHBoxLayout, QPushButton)
 
 from electrum import version
-from electrum import constants
+# from electrum import constants
+from electrum.simple_config import SimpleConfig, FairChains
 from electrum import ecc
 from electrum.i18n import _
 from electrum.util import PrintError, make_aiohttp_session
@@ -119,7 +120,7 @@ class UpdateCheckThread(QThread, PrintError):
                     sig = base64.b64decode(sig)
                     msg = version_num.encode('utf-8')
                     if ecc.verify_message_with_address(address=address, sig65=sig, message=msg,
-                                                       net=constants.BitcoinMainnet):
+                                                       net=FairChains):
                         self.print_error(f"valid sig for version announcement '{version_num}' from address '{address}'")
                         break
                 else:

@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (QLineEdit, QStyle, QStyleOptionFrame)
 from electrum.util import (format_satoshis_plain, decimal_point_to_base_unit_name,
                            FEERATE_PRECISION, quantize_feerate)
 
+from electrum.simple_config import SimpleConfig, FairChains
 
 class MyLineEdit(QLineEdit):
     frozen = pyqtSignal()
@@ -86,7 +87,7 @@ class BTCAmountEdit(AmountEdit):
         self.decimal_point = decimal_point
 
     def _base_unit(self):
-        return decimal_point_to_base_unit_name(self.decimal_point())
+        return decimal_point_to_base_unit_name(FairChains.base_units_inverse,self.decimal_point())
 
     def get_amount(self):
         try:

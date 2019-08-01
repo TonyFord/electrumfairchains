@@ -11,8 +11,11 @@ from copy import deepcopy
 
 from . import util
 from .util import (user_dir, print_error, PrintError, make_dir,
-                   NoDynamicFeeEstimates, format_fee_satoshis, quantize_feerate)
+             NoDynamicFeeEstimates, format_fee_satoshis, quantize_feerate)
+
 from .i18n import _
+
+# from .constants import FairChains_Collection
 
 FEE_ETA_TARGETS = [1, 1, 1, 1]
 FEE_DEPTH_TARGETS = [10000000, 5000000, 2000000, 1000000, 500000, 200000, 100000]
@@ -27,16 +30,25 @@ FEERATE_STATIC_VALUES = [5000, 10000, 20000, 30000, 50000, 70000, 100000, 150000
 
 
 config = None
+config_global = None
 
 
 def get_config():
     global config
     return config
 
+def get_config_global():
+    global config_global
+    return config_global
+
 
 def set_config(c):
     global config
     config = c
+
+def set_config_global(c):
+    global config_global
+    config_global = c
 
 
 FINAL_CONFIG_VERSION = 3
@@ -72,20 +84,33 @@ class SimpleConfig(PrintError):
         # testing.
         if read_user_config_function is None:
             read_user_config_function = read_user_config
+
+        # get selected fairchain by global user data ( /.electrumfairchains/config )
         if read_user_dir_function is None:
-            self.user_dir = user_dir
+            self.user_dir_global = user_dir
         else:
-            self.user_dir = read_user_dir_function
+            self.user_dir_global = read_user_dir_function
 
         # The command line options
         self.cmdline_options = deepcopy(options)
         # don't allow to be set on CLI:
         self.cmdline_options.pop('config_version', None)
 
+        self.user_config_global = {} # /.electrumfairchains/config
+        self.path_global = self.efc_path_global()
+        self.user_config_global = read_user_config_function(self.path_global)
+
+        if self.get_global('selected_fairchain') == None:
+            self.set_key_global('selected_fairchain', 'FairCoin', True )
+
+        # load selected fairchain user config
+        self.user_dir=self.user_dir_global()+'.'+self.get_global('selected_fairchain')
+
         # Set self.path and read the user config
-        self.user_config = {}  # for self.get in etc_path()
+        self.user_config = {}  # for self.get in etc_path() /.electrumfairchains.<coin>/config
         self.path = self.efc_path()
         self.user_config = read_user_config_function(self.path)
+
         if not self.user_config:
             # avoid new config getting upgraded
             self.user_config = {'config_version': FINAL_CONFIG_VERSION}
@@ -100,26 +125,27 @@ class SimpleConfig(PrintError):
 
         # Make a singleton instance of 'self'
         set_config(self)
+        set_config_global(self)
+
 
     def efc_path(self):
         # Read efc_path from command line
         # Otherwise use the user's default data directory.
         path = self.get('efc_path')
         if path is None:
-            path = self.user_dir()
+            path = self.user_dir
 
         make_dir(path, allow_symlink=False)
-        if self.get('testnet'):
-            path = os.path.join(path, 'testnet')
-            make_dir(path, allow_symlink=False)
-        elif self.get('regtest'):
-            path = os.path.join(path, 'regtest')
-            make_dir(path, allow_symlink=False)
-        elif self.get('simnet'):
-            path = os.path.join(path, 'simnet')
-            make_dir(path, allow_symlink=False)
+        return path
 
-        #self.print_error("electrumfairchains directory", path)
+    def efc_path_global(self):
+        # Read efc_path from command line
+        # Otherwise use the user's default data directory.
+        path = self.get_global('efc_path')
+        if path is None:
+            path = self.user_dir_global()
+
+        make_dir(path, allow_symlink=False)
         return path
 
     def rename_config_keys(self, config, keypairs, deprecation_warning=False):
@@ -148,6 +174,18 @@ class SimpleConfig(PrintError):
             return
         self._set_key_in_user_config(key, value, save)
 
+    def set_key_global(self, key, value, save=True):
+        if not self.is_modifiable(key):
+            self.print_stderr("Warning: not changing config key '%s' set on the command line" % key)
+            return
+        try:
+            json.dumps(key)
+            json.dumps(value)
+        except:
+            self.print_error(f"json error: cannot save {repr(key)} ({repr(value)})")
+            return
+        self._set_key_in_user_config_global(key, value, save)
+
     def _set_key_in_user_config(self, key, value, save=True):
         with self.lock:
             if value is not None:
@@ -157,11 +195,27 @@ class SimpleConfig(PrintError):
             if save:
                 self.save_user_config()
 
+    def _set_key_in_user_config_global(self, key, value, save=True):
+        with self.lock:
+            if value is not None:
+                self.user_config_global[key] = value
+            else:
+                self.user_config_global.pop(key, None)
+            if save:
+                self.save_user_config_global()
+
     def get(self, key, default=None):
         with self.lock:
             out = self.cmdline_options.get(key)
             if out is None:
                 out = self.user_config.get(key, default)
+        return out
+
+    def get_global(self, key, default=None):
+        with self.lock:
+            out = self.cmdline_options.get(key)
+            if out is None:
+                out = self.user_config_global.get(key, default)
         return out
 
     def requires_upgrade(self):
@@ -241,6 +295,20 @@ class SimpleConfig(PrintError):
         except FileNotFoundError:
             # datadir probably deleted while running...
             if os.path.exists(self.path):  # or maybe not?
+                raise
+
+    def save_user_config_global(self):
+        if not self.path_global:
+            return
+        path = os.path.join(self.path_global, "config")
+        s = json.dumps(self.user_config_global, indent=4, sort_keys=True)
+        try:
+            with open(path, "w", encoding='utf-8') as f:
+                f.write(s)
+            os.chmod(path, stat.S_IREAD | stat.S_IWRITE)
+        except FileNotFoundError:
+            # datadir probably deleted while running...
+            if os.path.exists(self.path_global):  # or maybe not?
                 raise
 
     def get_wallet_path(self):
@@ -574,3 +642,78 @@ def read_user_config(path):
     if not type(result) is dict:
         return {}
     return result
+
+############################################################################################
+# moved from constants.py to simple_config.py
+
+def read_json(filename, default):
+    path = os.path.join(os.path.dirname(__file__)+'/fairchains/', filename)
+    try:
+        with open(path, 'r') as f:
+            r = json.loads(f.read())
+    except:
+        r = default
+    return r
+
+def inv_dict(d):
+    return {v: k for k, v in d.items()}
+
+class FairChains():
+
+    def __init__(self):
+        fairchain = SimpleConfig().get_global('selected_fairchain')
+        FCs=read_json('fairchains.json',[])
+        if not fairchain in FCs:
+            fairchain=FCs[0]
+
+        FC =read_json(fairchain+'.json', {})
+        FCx=read_json(fairchain+'.electrumx.json', {})
+
+        self.TESTNET = False
+        self.NAME            = FC['data']['currencyName']
+        self.SHORTNAME       = FC['data']['currencySymbol']
+        self.BLOCKEXPLORER   = FCx['BLOCKEXPLORER']
+        self.BLOCKEXPLORER_DEFAULT   = FCx['BLOCKEXPLORER_DEFAULT']
+        self.EXCHANGE_RATES  = FCx['EXCHANGE_RATES']
+
+        self.WIF_PREFIX      = FC['data']['secretKeyVersion']
+        self.ADDRTYPE_P2PKH  = FC['data']['pubKeyAddrVersion']
+        self.ADDRTYPE_P2SH   = FC['data']['scriptAddrVersion']
+
+        self.SEGWIT_HRP = "bc"
+
+        self.GENESIS = FC['data']['blockHash']
+        self.DEFAULT_PORTS = FCx['PEER_DEFAULT_PORTS']
+        self.DEFAULT_SERVERS = FCx['PEERS']
+        self.CHECKPOINTS=[] # not used in FairChains or FairCoin
+
+        self.COINBASE_MATURITY=FC['data']['dynamicChainParams']['coinbaseMaturity']
+        self.TOTAL_SUPPLY_LIMIT=FC['data']['maxMoney']
+
+        self.xprv_header = int(FC['data']['extSecretPrefix'],16)
+        self.XPRV_HEADERS = {
+            'standard':    self.xprv_header,  # xprv
+            'p2wpkh-p2sh': 0x049d7878,  # yprv
+            'p2wsh-p2sh':  0x0295b005,  # Yprv
+            'p2wpkh':      0x04b2430c,  # zprv
+            'p2wsh':       0x02aa7a99,  # Zprv
+            }
+        self.XPRV_HEADERS_INV = inv_dict(self.XPRV_HEADERS)
+
+        self.xpup_header = int(FC['data']['extPubKeyPrefix'],16)
+        self.XPUB_HEADERS = {
+            'standard':    self.xpup_header,  # xpub
+            'p2wpkh-p2sh': 0x049d7cb2,  # ypub
+            'p2wsh-p2sh':  0x0295b43f,  # Ypub
+            'p2wpkh':      0x04b24746,  # zpub
+            'p2wsh':       0x02aa7ed3,  # Zpub
+            }
+        self.XPUB_HEADERS_INV = inv_dict(self.XPUB_HEADERS)
+        self.BIP44_COIN_TYPE = 0
+
+        self.base_units = { self.SHORTNAME : 8, 'm'+self.SHORTNAME : 5, 'u'+self.SHORTNAME : 2, 'sat':0}
+        self.base_units_inverse = inv_dict(self.base_units)
+        self.base_units_list = [ self.SHORTNAME, 'm'+self.SHORTNAME, 'u'+self.SHORTNAME, 'sat']  # list(dict) does not guarantee order
+        self.DECIMAL_POINT_DEFAULT = 8
+
+FairChains=FairChains()

@@ -33,7 +33,7 @@ import sys
 from typing import (Sequence, Union, NamedTuple, Tuple, Optional, Iterable,
                     Callable, List, Dict)
 
-from . import ecc, bitcoin, constants, segwit_addr
+from . import ecc, bitcoin, segwit_addr
 from .util import print_error, profiler, to_bytes, bh2u, bfh
 from .bitcoin import (TYPE_ADDRESS, TYPE_PUBKEY, TYPE_SCRIPT, hash_160,
                       hash160_to_p2sh, hash160_to_p2pkh, hash_to_segwit_addr,
@@ -42,7 +42,7 @@ from .bitcoin import (TYPE_ADDRESS, TYPE_PUBKEY, TYPE_SCRIPT, hash_160,
                       opcodes, add_number_to_script, base_decode)
 from .crypto import sha256d
 from .keystore import xpubkey_to_address, xpubkey_to_pubkey
-
+from .simple_config import SimpleConfig, FairChains
 
 NO_SIGNATURE = 'ff'
 PARTIAL_TXN_HEADER_MAGIC = b'EPTF\xff'
@@ -833,11 +833,11 @@ class Transaction:
         # If we don't know the script, we _guess_ it is pubkeyhash.
         # As this method is used e.g. for tx size estimation,
         # the estimation will not be precise.
-        witver, witprog = segwit_addr.decode(constants.net.SEGWIT_HRP, addr)
+        witver, witprog = segwit_addr.decode(FairChains.SEGWIT_HRP, addr)
         if witprog is not None:
             return 'p2wpkh'
         addrtype, hash_160_ = b58_address_to_hash160(addr)
-        if addrtype == constants.net.ADDRTYPE_P2PKH:
+        if addrtype == FairChains.ADDRTYPE_P2PKH:
             return 'p2pkh'
         #elif addrtype == constants.net.ADDRTYPE_P2SH:
         #    return 'p2wpkh-p2sh'

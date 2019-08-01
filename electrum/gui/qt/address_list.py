@@ -35,6 +35,7 @@ from electrum.util import block_explorer_URL
 from electrum.plugin import run_hook
 from electrum.bitcoin import is_address
 from electrum.wallet import InternalAddressCorruption
+from electrum.simple_config import SimpleConfig, FairChains
 
 from .util import MyTreeView, MONOSPACE_FONT, ColorScheme
 
@@ -210,7 +211,7 @@ class AddressList(MyTreeView):
                 menu.addAction(_("Encrypt/decrypt message"), lambda: self.parent.encrypt_message(addr))
             if can_delete:
                 menu.addAction(_("Remove from wallet"), lambda: self.parent.remove_address(addr))
-            addr_URL = block_explorer_URL(self.config, 'addr', addr)
+            addr_URL = block_explorer_URL(self.config, 'addr', addr, FairChains)
             if addr_URL:
                 menu.addAction(_("View on block explorer"), lambda: webbrowser.open(addr_URL))
 

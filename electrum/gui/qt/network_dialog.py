@@ -33,10 +33,11 @@ from PyQt5.QtWidgets import (QTreeWidget, QTreeWidgetItem, QMenu, QGridLayout, Q
                              QTabWidget, QWidget, QLabel)
 
 from electrum.i18n import _
-from electrum import constants, blockchain
+from electrum import blockchain
 from electrum.util import print_error
 from electrum.interface import serialize_server, deserialize_server
 from electrum.network import Network
+from electrum.simple_config import SimpleConfig, FairChains
 
 from .util import Buttons, CloseButton, HelpButton, read_QIcon
 
@@ -409,7 +410,7 @@ class NetworkChoiceLayout(object):
     def change_protocol(self, use_ssl):
         p = 's' if use_ssl else 't'
         host = self.server_host.text()
-        pp = self.servers.get(host, constants.net.DEFAULT_PORTS)
+        pp = self.servers.get(host, FairChains.DEFAULT_PORTS)
         if p not in pp.keys():
             p = list(pp.keys())[0]
         port = pp[p]
@@ -431,7 +432,7 @@ class NetworkChoiceLayout(object):
             self.change_server(str(x.text(0)), self.protocol)
 
     def change_server(self, host, protocol):
-        pp = self.servers.get(host, constants.net.DEFAULT_PORTS)
+        pp = self.servers.get(host, FairChains.DEFAULT_PORTS)
         if protocol and protocol not in protocol_letters:
             protocol = None
         if protocol:

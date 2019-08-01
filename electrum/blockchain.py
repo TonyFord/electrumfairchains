@@ -29,7 +29,7 @@ from .bitcoin import hash_encode, int_to_hex, rev_hex
 from .crypto import sha256d
 from . import constants
 from .util import bfh, bh2u
-from .simple_config import SimpleConfig
+from .simple_config import SimpleConfig, FairChains
 
 
 HEADER_SIZE = 108  # bytes
@@ -90,9 +90,9 @@ def read_blockchains(config: 'SimpleConfig'):
     best_chain = Blockchain(config=config,
                             forkpoint=0,
                             parent=None,
-                            forkpoint_hash=constants.net.GENESIS,
+                            forkpoint_hash=FairChains.GENESIS,
                             prev_hash=None)
-    blockchains[constants.net.GENESIS] = best_chain
+    blockchains[FairChains.GENESIS] = best_chain
     # consistency checks
     # if best_chain.height() > constants.net.max_checkpoint():  # fork management skipped in FairChains because of PoC
     if best_chain.height() > 0:
@@ -152,7 +152,7 @@ def read_blockchains(config: 'SimpleConfig'):
 
 
 def get_best_chain() -> 'Blockchain':
-    return blockchains[constants.net.GENESIS]
+    return blockchains[FairChains.GENESIS]
 
 # block hash -> chain work; up to and including that block
 _CHAINWORK_CACHE = {
@@ -189,7 +189,7 @@ class Blockchain(util.PrintError):
 
     @property
     def checkpoints(self):
-        return constants.net.CHECKPOINTS
+        return FairChains.CHECKPOINTS
 
     def get_max_child(self) -> Optional[int]:
         children = self.get_direct_children()
@@ -288,8 +288,6 @@ class Blockchain(util.PrintError):
             raise Exception("hash mismatches with expected: {} vs {}".format(expected_header_hash, _hash))
         if prev_hash != header.get('prev_block_hash'):
             raise Exception("prev hash mismatch: %s vs %s" % (prev_hash, header.get('prev_block_hash')))
-        if constants.net.TESTNET:
-            return
         #bits = cls.target_to_bits(target)
         #if bits != header.get('bits'):
         #    raise Exception("bits mismatch: %s vs %s" % (bits, header.get('bits')))
@@ -480,7 +478,7 @@ class Blockchain(util.PrintError):
         if height == -1:
             return '0000000000000000000000000000000000000000000000000000000000000000'
         elif height == 0:
-            return constants.net.GENESIS
+            return FairChains.GENESIS
         elif is_height_checkpoint():
             index = height // 2016
             h, t = self.checkpoints[index]
@@ -493,8 +491,6 @@ class Blockchain(util.PrintError):
 
     def get_target(self, index: int) -> int:
         # compute target from chunk x, used in chunk x+1
-        if constants.net.TESTNET:
-            return 0
         if index == -1:
             return MAX_TARGET
         if index < len(self.checkpoints):
@@ -549,10 +545,6 @@ class Blockchain(util.PrintError):
     def get_chainwork(self, height=None) -> int:
         if height is None:
             height = max(0, self.height())
-        if constants.net.TESTNET:
-            # On testnet/regtest, difficulty works somewhat different.
-            # It's out of scope to properly implement that.
-            return height
         last_retarget = height // 2016 * 2016 - 1
         cached_height = last_retarget
         while _CHAINWORK_CACHE.get(self.get_hash(cached_height)) is None:
@@ -580,7 +572,7 @@ class Blockchain(util.PrintError):
             #self.print_error("cannot connect at height", height)
             return False
         if height == 0:
-            return hash_header(header) == constants.net.GENESIS
+            return hash_header(header) == FairChains.GENESIS
         try:
             prev_hash = self.get_hash(height - 1)
         except:

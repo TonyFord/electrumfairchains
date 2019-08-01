@@ -42,7 +42,7 @@ from . import pem
 from . import version
 from . import blockchain
 from .blockchain import Blockchain
-from . import constants
+# from . import constants
 from .i18n import _
 
 if TYPE_CHECKING:

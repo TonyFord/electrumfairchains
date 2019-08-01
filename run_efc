@@ -104,7 +104,7 @@ def init_daemon(config_options):
     storage = WalletStorage(config.get_wallet_path())
     if not storage.file_exists():
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrumfair create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'efc create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
     if storage.is_encrypted():
         if storage.is_encrypted_with_hw_device():
@@ -318,7 +318,7 @@ if __name__ == '__main__':
         config_options['portable'] = True
 
     if config_options.get('portable'):
-        config_options['electrumfair_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrumfair_data')
+        config_options['efc_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'efc_data')
 
     # kivy sometimes freezes when we write to sys.stderr
     log_verbosity = config_options.get('verbosity') if config_options.get('gui') != 'kivy' else ''

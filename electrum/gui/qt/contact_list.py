@@ -34,6 +34,7 @@ from electrum.i18n import _
 from electrum.bitcoin import is_address
 from electrum.util import block_explorer_URL
 from electrum.plugin import run_hook
+from electrum.simple_config import SimpleConfig, FairChains
 
 from .util import MyTreeView, import_meta_gui, export_meta_gui
 
@@ -95,7 +96,7 @@ class ContactList(MyTreeView):
                     menu.addAction(_("Edit {}").format(column_title), lambda p=persistent: self.edit(QModelIndex(p)))
             menu.addAction(_("Pay to"), lambda: self.parent.payto_contacts(selected_keys))
             menu.addAction(_("Delete"), lambda: self.parent.delete_contacts(selected_keys))
-            URLs = [block_explorer_URL(self.config, 'addr', key) for key in filter(is_address, selected_keys)]
+            URLs = [block_explorer_URL(self.config, 'addr', key, FairChains) for key in filter(is_address, selected_keys)]
             if URLs:
                 menu.addAction(_("View on block explorer"), lambda: [webbrowser.open(u) for u in URLs])
 

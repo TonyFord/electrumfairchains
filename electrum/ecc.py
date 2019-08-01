@@ -37,8 +37,8 @@ from .util import bfh, bh2u, assert_bytes, print_error, to_bytes, InvalidPasswor
 from .crypto import (sha256d, aes_encrypt_with_iv, aes_decrypt_with_iv, hmac_oneshot)
 from .ecc_fast import do_monkey_patching_of_python_ecdsa_internals_with_libsecp256k1
 from . import msqr
-from . import constants
-
+# from . import constants
+from .simple_config import SimpleConfig, FairChains
 
 do_monkey_patching_of_python_ecdsa_internals_with_libsecp256k1()
 
@@ -316,7 +316,7 @@ def msg_magic(message: bytes) -> bytes:
 def verify_message_with_address(address: str, sig65: bytes, message: bytes, *, net=None):
     from .bitcoin import pubkey_to_address
     assert_bytes(sig65, message)
-    if net is None: net = constants.net
+    if net is None: net = FairChains
     try:
         h = sha256d(msg_magic(message))
         public_key, compressed = ECPubkey.from_signature65(sig65, h)

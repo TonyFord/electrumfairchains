@@ -47,6 +47,7 @@ from electrum.util import (block_explorer_URL, profiler, print_error, TxMinedInf
 from .util import (read_QIcon, MONOSPACE_FONT, Buttons, CancelButton, OkButton,
                    filename_field, MyTreeView, AcceptFileDragDrop, WindowModalDialog,
                    CloseButton)
+from electrum.simple_config import SimpleConfig, FairChains
 
 if TYPE_CHECKING:
     from electrum.wallet import Abstract_Wallet
@@ -571,7 +572,7 @@ class HistoryList(MyTreeView, AcceptFileDragDrop):
         tx = self.wallet.db.get_transaction(tx_hash)
         if not tx:
             return
-        tx_URL = block_explorer_URL(self.config, 'tx', tx_hash)
+        tx_URL = block_explorer_URL(self.config, 'tx', tx_hash, FairChains)
         height = self.wallet.get_tx_height(tx_hash).height
         is_relevant, is_mine, v, fee = self.wallet.get_wallet_delta(tx)
         is_unconfirmed = height <= 0

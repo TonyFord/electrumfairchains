@@ -56,9 +56,9 @@ from electrum.util import (format_time, format_satoshis, format_fee_satoshis,
                            format_satoshis_plain, NotEnoughFunds, PrintError,
                            UserCancelled, NoDynamicFeeEstimates, profiler,
                            export_meta, import_meta, bh2u, bfh, InvalidPassword,
-                           base_units, base_units_list, base_unit_name_to_decimal_point,
+                           base_unit_name_to_decimal_point,
                            decimal_point_to_base_unit_name, quantize_feerate,
-                           UnknownBaseUnit, DECIMAL_POINT_DEFAULT, UserFacingException,
+                           UnknownBaseUnit, UserFacingException,
                            get_new_wallet_name, send_exception_to_crash_reporter)
 from electrum.transaction import Transaction, TxOutput
 from electrum.address_synchronizer import AddTransactionException
@@ -67,9 +67,9 @@ from electrum.wallet import (Multisig_Wallet, CannotBumpFee, Abstract_Wallet,
 from electrum.version import EFC_VERSION
 from electrum.network import Network, TxBroadcastError, BestEffortRequestFailed
 from electrum.exchange_rate import FxThread
-from electrum.simple_config import SimpleConfig
+from electrum.simple_config import SimpleConfig, FairChains
 
-from .exception_window import Exception_Hook
+# from .exception_window import Exception_Hook
 from .amountedit import AmountEdit, BTCAmountEdit, MyLineEdit, FeerateEdit
 from .qrcodewidget import QRCodeWidget, QRDialog
 from .qrtextedit import ShowQRTextEdit, ScanQRTextEdit
@@ -127,7 +127,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.config = config = gui_object.config  # type: SimpleConfig
         self.gui_thread = gui_object.gui_thread
 
-        self.setup_exception_hook()
+        # self.setup_exception_hook()
 
         self.network = gui_object.daemon.network  # type: Network
         assert wallet, "no wallet"
@@ -154,11 +154,11 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.create_status_bar()
         self.need_update = threading.Event()
 
-        self.decimal_point = config.get('decimal_point', DECIMAL_POINT_DEFAULT)
+        self.decimal_point = config.get('decimal_point', FairChains.DECIMAL_POINT_DEFAULT)
         try:
-            decimal_point_to_base_unit_name(self.decimal_point)
+            decimal_point_to_base_unit_name(FairChains.base_units_inverse, self.decimal_point)
         except UnknownBaseUnit:
-            self.decimal_point = DECIMAL_POINT_DEFAULT
+            self.decimal_point = FairChains.DECIMAL_POINT_DEFAULT
         self.num_zeros = int(config.get('num_zeros', 0))
 
         self.completions = QStringListModel()
@@ -261,8 +261,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.wallet.clear_coin_price_cache()
         self.new_fx_history_signal.emit()
 
-    def setup_exception_hook(self):
-        Exception_Hook(self)
+    # def setup_exception_hook(self):
+    #    Exception_Hook(self)
 
     def on_fx_history(self):
         self.history_model.refresh('fx_history')
@@ -448,7 +448,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             self.setGeometry(100, 100, 840, 400)
 
     def watching_only_changed(self):
-        name = "ElectrumFairChains Testnet" if constants.net.TESTNET else "ElectrumFairChains"
+        name = "ElectrumFairChains"
         title = '%s %s  -  %s' % (name, EFC_VERSION, self.wallet.basename())
         extra = [self.wallet.storage.get('wallet_type', '?')]
         if self.wallet.is_watching_only():
@@ -739,7 +739,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         return self.decimal_point
 
     def base_unit(self):
-        return decimal_point_to_base_unit_name(self.decimal_point)
+        return decimal_point_to_base_unit_name(FairChains.base_units_inverse, self.decimal_point)
 
     def connect_fields(self, window, btc_e, fiat_e, fee_e):
 
@@ -2060,6 +2060,18 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.update_check_button.hide()
         sb.addPermanentWidget(self.update_check_button)
 
+        fairchains_combo = QComboBox()
+        for i,v in constants.FairChains_Collection.FAIRCHAINS.items():
+            fairchains_combo.addItem(i, v)
+        index = fairchains_combo.findData(self.config.get_global('selected_fairchain', constants.FairChains_Collection.FAIRCHAIN_DEFAULT[1]))
+        fairchains_combo.setCurrentIndex(index)
+        def on_fairchains(x):
+            self.config.set_key_global('selected_fairchain', fairchains_combo.itemData(x), True)
+            self.show_warning(_('Coin selection changed, please restart ElectrumFairChains!'), title=_('Success'))
+            self.close()
+        fairchains_combo.currentIndexChanged.connect(on_fairchains)
+        sb.addPermanentWidget(fairchains_combo)
+
         self.password_button = StatusBarButton(QIcon(), _("Password"), self.change_password_dialog )
         sb.addPermanentWidget(self.password_button)
 
@@ -2894,7 +2906,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         SSL_id_e.setReadOnly(True)
         id_widgets.append((SSL_id_label, SSL_id_e))
 
-        units = base_units_list
+        units = FairChains.base_units_list
+
         msg = (_('Base unit of your wallet.')
               + '\n1 = 1000m. 1m = 1000u. 1u = 100sat.\n'
               + _(' These settings affects the Send tab, and all balance related fields.'))
@@ -2908,7 +2921,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
                 return
             edits = self.amount_e, self.fee_e, self.receive_amount_e
             amounts = [edit.get_amount() for edit in edits]
-            self.decimal_point = base_unit_name_to_decimal_point(unit_result)
+            self.decimal_point = base_unit_name_to_decimal_point(FairChains.base_units, unit_result)
             self.config.set_key('decimal_point', self.decimal_point, True)
             nz.setMaximum(self.decimal_point)
             self.history_list.update()
@@ -2920,12 +2933,12 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         unit_combo.currentIndexChanged.connect(lambda x: on_unit(x, nz))
         gui_widgets.append((unit_label, unit_combo))
 
-        block_explorers = sorted(util.block_explorer_info().keys())
+        block_explorers = sorted(FairChains.BLOCKEXPLORER.keys())
         msg = _('Choose which online block explorer to use for functions that open a web browser')
         block_ex_label = HelpLabel(_('Online Block Explorer') + ':', msg)
         block_ex_combo = QComboBox()
         block_ex_combo.addItems(block_explorers)
-        block_ex_combo.setCurrentIndex(block_ex_combo.findText(util.block_explorer(self.config)))
+        block_ex_combo.setCurrentIndex(block_ex_combo.findText(util.block_explorer(self.config, FairChains)))
         def on_be(x):
             be_result = block_explorers[block_ex_combo.currentIndex()]
             self.config.set_key('block_explorer', be_result, True)
