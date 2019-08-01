@@ -1,4 +1,4 @@
-Electrum - Lightweight FairCoin client
+Electrum - Lightweight FairChains client ( !!! UNDER CONSTRUCTION !!!)
 ======================================
 
 ::
