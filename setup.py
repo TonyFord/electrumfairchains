@@ -26,7 +26,7 @@ with open('contrib/requirements/requirements-hw.txt') as f:
     requirements_hw = f.read().splitlines()
 
 # load version.py; needlessly complicated alternative to "imp.load_source":
-version_spec = importlib.util.spec_from_file_location('version', 'electrum/version.py')
+version_spec = importlib.util.spec_from_file_location('version', 'electrumfairchains/version.py')
 version_module = version = importlib.util.module_from_spec(version_spec)
 version_spec.loader.exec_module(version_module)
 
@@ -47,7 +47,7 @@ if platform.system() in ['Linux', 'FreeBSD', 'DragonFly']:
             usr_share = os.path.expanduser('~/.local/share')
     data_files += [
         (os.path.join(usr_share, 'applications/'), ['efc.desktop']),
-        (os.path.join(usr_share, icons_dirname), ['electrum/gui/icons/electrumfair.png'])
+        (os.path.join(usr_share, icons_dirname), ['electrumfairchains/gui/icons/efc.png'])
     ]
 
 extras_require = {
@@ -64,25 +64,25 @@ setup(
     install_requires=requirements,
     extras_require=extras_require,
     packages=[
-        'electrum',
-        'electrum.gui',
-        'electrum.gui.qt',
-        'electrum.plugins',
-    ] + [('electrum.plugins.'+pkg) for pkg in find_packages('electrum/plugins')],
+        'electrumfairchains',
+        'electrumfairchains.gui',
+        'electrumfairchains.gui.qt',
+        'electrumfairchains.plugins',
+    ] + [('electrumfairchains.plugins.'+pkg) for pkg in find_packages('electrumfairchains/plugins')],
     package_dir={
-        'electrum': 'electrum'
+        'electrumfairchains': 'electrumfairchains'
     },
     package_data={
         '': ['*.txt', '*.json', '*.ttf', '*.otf'],
-        'electrum': [
+        'electrumfairchains': [
             'wordlist/*.txt',
             'locale/*/LC_MESSAGES/electrumfair.mo',
         ],
-        'electrum.gui': [
+        'electrumfairchains.gui': [
             'icons/*',
         ],
     },
-    scripts=['electrum/efc'],
+    scripts=['electrumfairchains/efc'],
     data_files=data_files,
     description="Lightweight FairChains Wallet",
     author="Thomas Voegtlin, Thomas König (FairCoin), Sebastian Gampe",

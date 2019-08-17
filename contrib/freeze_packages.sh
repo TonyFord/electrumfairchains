@@ -3,7 +3,7 @@
 
 set -e
 
-venv_dir=~/.electrumfair-venv
+venv_dir=~/.electrumfairchains-venv
 
 contrib=$(dirname "$0")
 

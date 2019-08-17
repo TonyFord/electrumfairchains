@@ -23,7 +23,7 @@ Electrum from its root directory without installing it on your
 system; all the python dependencies are included in the 'packages'
 directory. To run Electrum from its root directory, just do::
 
-    ./run_electrumfair
+    ./run_efc
 
 You can also install Electrum on your system, by running this command::
 
@@ -57,7 +57,7 @@ Run install (this should install dependencies)::
 Compile the protobuf description file::
 
     sudo apt-get install protobuf-compiler
-    protoc --proto_path=electrum --python_out=electrum electrum/paymentrequest.proto
+    protoc --proto_path=electrumfairchains --python_out=electrumfairchains electrumfairchains/paymentrequest.proto
 
 Create translations (optional)::
 
@@ -75,7 +75,7 @@ directory.
 If you have pip, you can do::
 
     python setup.py sdist
-    sudo pip install --pre dist/ElectrumFairChains-2.0.tar.gz
+    sudo pip install --pre dist/ElectrumFairChains-3.3.4.tar.gz
 
 
 If you don't have pip, install with::
@@ -110,4 +110,4 @@ See :code:`contrib/build-wine/docker/README.md`.
 Android
 -------
 
-See :code:`electrum/gui/kivy/Readme.md`.
+See :code:`electrumfairchains/gui/kivy/Readme.md`.

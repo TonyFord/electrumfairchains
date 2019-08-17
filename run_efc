@@ -43,7 +43,7 @@ is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "efc.deskto
 is_android = 'ANDROID_DATA' in os.environ
 
 # move this back to gui/kivy/__init.py once plugins are moved
-os.environ['KIVY_DATA_DIR'] = os.path.abspath(os.path.dirname(__file__)) + '/electrum/gui/kivy/data/'
+os.environ['KIVY_DATA_DIR'] = os.path.abspath(os.path.dirname(__file__)) + '/electrumfairchains/gui/kivy/data/'
 
 if is_local or is_android:
     sys.path.insert(0, os.path.join(script_dir, 'packages'))
@@ -75,16 +75,16 @@ def check_imports():
 if not is_android:
     check_imports()
 
-from electrum import util
-from electrum import constants
-from electrum import SimpleConfig
-from electrum.wallet import Wallet
-from electrum.storage import WalletStorage, get_derivation_used_for_hw_device_encryption
-from electrum.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
-from electrum.util import set_verbosity, InvalidPassword
-from electrum.commands import get_parser, known_commands, Commands, config_variables
-from electrum import daemon
-from electrum import keystore
+from electrumfairchains import util
+from electrumfairchains import constants
+from electrumfairchains import SimpleConfig
+from electrumfairchains.wallet import Wallet
+from electrumfairchains.storage import WalletStorage, get_derivation_used_for_hw_device_encryption
+from electrumfairchains.util import print_msg, print_stderr, json_encode, json_decode, UserCancelled
+from electrumfairchains.util import set_verbosity, InvalidPassword
+from electrumfairchains.commands import get_parser, known_commands, Commands, config_variables
+from electrumfairchains import daemon
+from electrumfairchains import keystore
 
 # get password routine
 def prompt_password(prompt, confirm=True):
@@ -142,7 +142,7 @@ def init_cmdline(config_options, server):
 
     if cmd.requires_wallet and not storage.file_exists():
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrumfair create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'efc create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
 
     # important warning
@@ -256,7 +256,7 @@ def run_offline_command(config, config_options, plugins):
 
 
 def init_plugins(config, gui_name):
-    from electrum.plugin import Plugins
+    from electrumfairchains.plugin import Plugins
     return Plugins(config, gui_name)
 
 
@@ -374,7 +374,7 @@ if __name__ == '__main__':
                 init_plugins(config, 'cmdline')
                 d = daemon.Daemon(config, fd)
                 if config.get('websocket_server'):
-                    from electrum import websockets
+                    from electrumfairchains import websockets
                     websockets.WebSocketServer(config, d.network)
                 if config.get('requests_dir'):
                     path = os.path.join(config.get('requests_dir'), 'index.html')
@@ -402,7 +402,7 @@ if __name__ == '__main__':
         else:
             cmd = known_commands[cmdname]
             if cmd.requires_network:
-                print_msg("Daemon not running; try 'electrumfair daemon start'")
+                print_msg("Daemon not running; try 'efc daemon start'")
                 sys.exit(1)
             else:
                 init_plugins(config, 'cmdline')

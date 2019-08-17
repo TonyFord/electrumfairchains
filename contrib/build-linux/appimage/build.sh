@@ -7,7 +7,7 @@ PROJECT_ROOT="$(dirname "$(readlink -e "$0")")/../../.."
 CONTRIB="$PROJECT_ROOT/contrib"
 DISTDIR="$PROJECT_ROOT/dist"
 BUILDDIR="$CONTRIB/build-linux/appimage/build/appimage"
-APPDIR="$BUILDDIR/electrumfair.AppDir"
+APPDIR="$BUILDDIR/electrumfairchains.AppDir"
 CACHEDIR="$CONTRIB/build-linux/appimage/.cache/appimage"
 
 
@@ -20,7 +20,7 @@ LIBSECP_VERSION="b408c6a8b287003d1ade5709e6f7bc3c7f1d5be7"
 # VERSION=`git rev-parse --abbrev-ref HEAD`
 # /usr/bin/python3 -c "import electrum.version; print(electrum.version.ELECTRUMFAIR_VERSION)"
 
-APPIMAGE="$DISTDIR/ElectrumFair-$VERSION.AppImage"
+APPIMAGE="$DISTDIR/ElectrumFairChains-$VERSION.AppImage"
 
 rm -rf "$BUILDDIR"
 mkdir -p "$APPDIR" "$CACHEDIR" "$DISTDIR"
@@ -113,7 +113,7 @@ info "preparing electrum-locale."
 )
 
 
-info "installing electrumfair and its dependencies."
+info "installing electrumfairchains and its dependencies."
 mkdir -p "$CACHEDIR/pip_cache"
 "$python" -m pip install --cache-dir "$CACHEDIR/pip_cache" -r "$CONTRIB/deterministic-build/requirements.txt"
 "$python" -m pip install --cache-dir "$CACHEDIR/pip_cache" -r "$CONTRIB/deterministic-build/requirements-binaries.txt"
@@ -125,8 +125,8 @@ cp "/usr/lib/x86_64-linux-gnu/libzbar.so.0" "$APPDIR/usr/lib/libzbar.so.0"
 
 
 info "desktop integration."
-cp "$PROJECT_ROOT/electrumfair.desktop" "$APPDIR/electrumfair.desktop"
-cp "$PROJECT_ROOT/electrum/gui/icons/electrumfair.png" "$APPDIR/electrumfair.png"
+cp "$PROJECT_ROOT/efc.desktop" "$APPDIR/efc.desktop"
+cp "$PROJECT_ROOT/electrum/gui/icons/efc.png" "$APPDIR/efc.png"
 
 
 # add launcher

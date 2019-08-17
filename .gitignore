@@ -6,7 +6,6 @@ dist/
 *.egg/
 contrib/pyinstaller/
 ElectrumFairChains.egg-info/*
-electrum/locale/**
 .devlocaltmp/
 *_trial_temp
 packages
@@ -17,8 +16,8 @@ bin/
 .idea
 
 # icons
-electrum/gui/kivy/theming/light-0.png
-electrum/gui/kivy/theming/light.atlas
+electrumfairchains/gui/kivy/theming/light-0.png
+electrumfairchains/gui/kivy/theming/light.atlas
 
 # tests/tox
 .tox/
