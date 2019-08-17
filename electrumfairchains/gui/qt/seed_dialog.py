@@ -30,7 +30,7 @@ from PyQt5.QtWidgets import (QVBoxLayout, QCheckBox, QHBoxLayout, QLineEdit,
 
 from ...i18n import _
 from ...mnemonic import Mnemonic, seed_type
-import ...old_mnemonic
+import electrumfairchains.old_mnemonic
 
 from .util import (Buttons, OkButton, WWLabel, ButtonsTextEdit, icon_path,
                    EnterButton, CloseButton, WindowModalDialog)
@@ -150,7 +150,7 @@ class SeedLayout(QVBoxLayout):
 
     def initialize_completer(self):
         english_list = Mnemonic('en').wordlist
-        old_list = ...old_mnemonic.words
+        old_list = electrumfairchains.old_mnemonic.words
         self.wordlist = english_list + list(set(old_list) - set(english_list)) #concat both lists
         self.wordlist.sort()
         self.completer = QCompleter(self.wordlist)

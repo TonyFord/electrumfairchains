@@ -77,10 +77,11 @@ setup(
         'electrumfairchains': [
             'wordlist/*.txt',
             'locale/*/LC_MESSAGES/electrumfair.mo',
+            'fairchains/*.json'
         ],
         'electrumfairchains.gui': [
-            'icons/*',
-        ],
+            'icons/*'
+        ]
     },
     scripts=['electrumfairchains/efc'],
     data_files=data_files,

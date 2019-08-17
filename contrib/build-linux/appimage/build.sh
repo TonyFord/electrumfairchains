@@ -18,7 +18,7 @@ LIBSECP_VERSION="b408c6a8b287003d1ade5709e6f7bc3c7f1d5be7"
 
 # VERSION=`git describe --tags --dirty --always`
 # VERSION=`git rev-parse --abbrev-ref HEAD`
-# /usr/bin/python3 -c "import electrum.version; print(electrum.version.ELECTRUMFAIR_VERSION)"
+# /usr/bin/python3 -c "import electrum.version; print(electrum.version.EFC_VERSION)"
 
 APPIMAGE="$DISTDIR/ElectrumFairChains-$VERSION.AppImage"
 

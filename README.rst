@@ -59,11 +59,6 @@ Compile the protobuf description file::
     sudo apt-get install protobuf-compiler
     protoc --proto_path=electrumfairchains --python_out=electrumfairchains electrumfairchains/paymentrequest.proto
 
-Create translations (optional)::
-
-    sudo apt-get install python-requests gettext
-    ./contrib/make_locale
-
 
 
 Install on Linux systems
@@ -74,7 +69,7 @@ directory.
 
 If you have pip, you can do::
 
-    python setup.py sdist
+    python3 setup.py sdist
     sudo pip install --pre dist/ElectrumFairChains-3.3.4.tar.gz
 
 

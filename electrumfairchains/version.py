@@ -1,4 +1,4 @@
-EFC_VERSION = '3.3.4-fcx'   # version of the client package
+EFC_VERSION = '3.3.4b1'   # version of the client package
 APK_VERSION = '3.3.4.0'      # read by buildozer.spec
 
 PROTOCOL_VERSION = '1.4'     # protocol version requested
