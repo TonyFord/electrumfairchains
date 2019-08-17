@@ -59,7 +59,7 @@ from ...util import (format_time, format_satoshis, format_fee_satoshis,
                            base_unit_name_to_decimal_point,
                            decimal_point_to_base_unit_name, quantize_feerate,
                            UnknownBaseUnit, UserFacingException,
-                           get_new_wallet_name, send_exception_to_crash_reporter)
+                           get_new_wallet_name)
 from ...transaction import Transaction, TxOutput
 from ...address_synchronizer import AddTransactionException
 from ...wallet import (Multisig_Wallet, CannotBumpFee, Abstract_Wallet,
@@ -69,7 +69,6 @@ from ...network import Network, TxBroadcastError, BestEffortRequestFailed
 from ...exchange_rate import FxThread
 from ...simple_config import SimpleConfig, FairChains
 
-# from .exception_window import Exception_Hook
 from .amountedit import AmountEdit, BTCAmountEdit, MyLineEdit, FeerateEdit
 from .qrcodewidget import QRCodeWidget, QRDialog
 from .qrtextedit import ShowQRTextEdit, ScanQRTextEdit
@@ -83,7 +82,6 @@ from .util import (read_QIcon, ColorScheme, text_dialog, icon_path, WaitingDialo
                    filename_field, address_field)
 from .installwizard import WIF_HELP_TEXT
 from .history_list import HistoryList, HistoryModel
-from .update_checker import UpdateCheck, UpdateCheckThread
 
 
 class StatusBarButton(QPushButton):
@@ -126,8 +124,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.gui_object = gui_object
         self.config = config = gui_object.config  # type: SimpleConfig
         self.gui_thread = gui_object.gui_thread
-
-        # self.setup_exception_hook()
 
         self.network = gui_object.daemon.network  # type: Network
         assert wallet, "no wallet"
@@ -235,34 +231,9 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         gui_object.timer.timeout.connect(self.timer_actions)
         self.fetch_alias()
 
-        # If the option hasn't been set yet
-        if config.get('check_updates') is None:
-            choice = QMessageBox.question(self,
-                                 "ElectrumFairChains - " + _("Enable update check"),
-                                 _("For security reasons we advise that you always use the latest version of ElectrumFairChains.") + " " +
-                                 _("Would you like to be notified when there is a newer version of ElectrumFairChains available?"),
-                                 QMessageBox.Yes,
-                                 QMessageBox.No)
-            config.set_key('check_updates', choice == QMessageBox.Yes, save=True)
-
-        if config.get('check_updates', False):
-            # The references to both the thread and the window need to be stored somewhere
-            # to prevent GC from getting in our way.
-            def on_version_received(v):
-                if UpdateCheck.is_newer(v):
-                    self.update_check_button.setText(_("Update to ElectrumFairChains {} is available").format(v))
-                    self.update_check_button.clicked.connect(lambda: self.show_update_check(v))
-                    self.update_check_button.show()
-            self._update_check_thread = UpdateCheckThread(self)
-            self._update_check_thread.checked.connect(on_version_received)
-            self._update_check_thread.start()
-
     def on_history(self, b):
         self.wallet.clear_coin_price_cache()
         self.new_fx_history_signal.emit()
-
-    # def setup_exception_hook(self):
-    #    Exception_Hook(self)
 
     def on_fx_history(self):
         self.history_model.refresh('fx_history')
@@ -435,7 +406,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             wallet.try_detecting_internal_addresses_corruption()
         except InternalAddressCorruption as e:
             self.show_error(str(e))
-            send_exception_to_crash_reporter(e)
 
     def init_geometry(self):
         winpos = self.wallet.storage.get("winpos-qt")
@@ -607,7 +577,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         help_menu = menubar.addMenu(_("&Help"))
         help_menu.addAction(_("&About"), self.show_about)
-        help_menu.addAction(_("&Check for updates"), self.show_update_check)
         help_menu.addAction(_("&Official website"), lambda: webbrowser.open("https://github.com/fairchainsx/electrumfairchains/releases"))
         help_menu.addSeparator()
         help_menu.addAction(_("&Documentation"), lambda: webbrowser.open("https://github.com/fairchainsx/electrumfairchains/README.md")).setShortcut(QKeySequence.HelpContents)
@@ -635,9 +604,6 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
                               "servers that handle the most complicated parts of the Fairchains system.") + "\n\n" +
                            _("Uses icons from the Icons8 icon pack (icons8.com)."))
                          )
-
-    def show_update_check(self, version=None):
-        self.gui_object._update_check = UpdateCheck(self, version)
 
     def show_report_bug(self):
         msg = ' '.join([
