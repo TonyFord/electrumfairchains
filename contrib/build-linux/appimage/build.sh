@@ -11,6 +11,7 @@ APPDIR="$BUILDDIR/electrumfairchains.AppDir"
 CACHEDIR="$CONTRIB/build-linux/appimage/.cache/appimage"
 
 
+
 # pinned versions
 PYTHON_VERSION=3.6.8
 PKG2APPIMAGE_COMMIT="83483c2971fcaa1cb0c1253acd6c731ef8404381"
@@ -28,7 +29,6 @@ mkdir -p "$APPDIR" "$CACHEDIR" "$DISTDIR"
 
 . "$CONTRIB"/build_tools_util.sh
 
-
 info "downloading some dependencies."
 download_if_not_exist "$CACHEDIR/functions.sh" "https://raw.githubusercontent.com/AppImage/pkg2appimage/$PKG2APPIMAGE_COMMIT/functions.sh"
 verify_hash "$CACHEDIR/functions.sh" "a73a21a6c1d1e15c0a9f47f017ae833873d1dc6aa74a4c840c0b901bf1dcf09c"
@@ -38,8 +38,6 @@ verify_hash "$CACHEDIR/appimagetool" "c13026b9ebaa20a17e7e0a4c818a901f0faba75980
 
 download_if_not_exist "$CACHEDIR/Python-$PYTHON_VERSION.tar.xz" "https://www.python.org/ftp/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tar.xz"
 verify_hash "$CACHEDIR/Python-$PYTHON_VERSION.tar.xz" "35446241e995773b1bed7d196f4b624dadcadc8429f26282e756b2fb8a351193"
-
-
 
 info "building python."
 tar xf "$CACHEDIR/Python-$PYTHON_VERSION.tar.xz" -C "$BUILDDIR"
@@ -94,25 +92,6 @@ info "installing pip."
 "$python" -m ensurepip
 
 
-info "preparing electrum-locale."
-(
-    cd "$PROJECT_ROOT"
-    git submodule update --init
-
-    pushd "$CONTRIB"/deterministic-build/electrum-locale
-    if ! which msgfmt > /dev/null 2>&1; then
-        echo "Please install gettext"
-        exit 1
-    fi
-    for i in ./locale/*; do
-        dir="$PROJECT_ROOT/electrum/$i/LC_MESSAGES"
-        mkdir -p $dir
-        msgfmt --output-file="$dir/electrum.mo" "$i/electrum.po" || true
-    done
-    popd
-)
-
-
 info "installing electrumfairchains and its dependencies."
 mkdir -p "$CACHEDIR/pip_cache"
 "$python" -m pip install --cache-dir "$CACHEDIR/pip_cache" -r "$CONTRIB/deterministic-build/requirements.txt"
@@ -126,7 +105,7 @@ cp "/usr/lib/x86_64-linux-gnu/libzbar.so.0" "$APPDIR/usr/lib/libzbar.so.0"
 
 info "desktop integration."
 cp "$PROJECT_ROOT/efc.desktop" "$APPDIR/efc.desktop"
-cp "$PROJECT_ROOT/electrum/gui/icons/efc.png" "$APPDIR/efc.png"
+cp "$PROJECT_ROOT/electrumfairchains/gui/icons/efc.png" "$APPDIR/efc.png"
 
 
 # add launcher

@@ -17,18 +17,18 @@ folder.
 2. Build image
 
     ```
-    $ sudo docker build --no-cache -t efc-appimage-builder-img contrib/build-linux/appimage
+    $ sudo docker build --no-cache -t electrumfairchains-appimage-builder-img contrib/build-linux/appimage
     ```
 
 3. Build binary
 
     ```
     $ sudo docker run -it \
-        --name efc-appimage-builder-cont \
+        --name electrumfairchains-appimage-builder-cont \
         -v $PWD:/opt/electrumfairchains \
         --rm \
         --workdir /opt/electrumfairchains/contrib/build-linux/appimage \
-        efc-appimage-builder-img \
+        electrumfairchains-appimage-builder-img \
         ./build.sh
     ```
 
@@ -38,4 +38,4 @@ folder.
 ## FAQ
 
 ### How can I see what is included in the AppImage?
-Execute the binary as follows: `./electrum*.AppImage --appimage-extract`
+Execute the binary as follows: `./electrumfairchains*.AppImage --appimage-extract`
